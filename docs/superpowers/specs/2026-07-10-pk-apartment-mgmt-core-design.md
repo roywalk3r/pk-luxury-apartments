@@ -251,7 +251,7 @@ model AuditLog {
 | `/admin/tenants/new` | GET/POST | Register tenant (creates User + Tenancy) |
 | `/admin/tenants/[id]` | GET/POST | Edit / deactivate tenant |
 
-All forms use react-hook-form + Zod resolver. All actions go through server actions in `lib/queries/`. Each mutation writes an `AuditLog` entry.
+All forms use Server Actions with Zod validation and `useActionState` for inline errors. All actions go through `lib/actions/`. Each mutation writes an `AuditLog` entry.
 
 ## 8. Tenant surfaces (sub-project 1)
 
@@ -275,7 +275,7 @@ All forms use react-hook-form + Zod resolver. All actions go through server acti
 ## 10. Error handling
 
 - All API routes / server actions validate with Zod, return typed errors.
-- Server action shape: `{ ok: true, data } | { ok: false, error: string, fieldErrors?: Record<string,string> }`.
+- Server action shape: `{ errors?: Record<string,string[]>, message?: string }` (matches Next.js 16 auth-guide example).
 - Form components render `fieldErrors` next to inputs.
 - Unexpected errors caught at the boundary return a generic "Something went wrong" toast.
 
@@ -305,7 +305,8 @@ All forms use react-hook-form + Zod resolver. All actions go through server acti
 
 | Risk | Mitigation |
 |---|---|
-| Next.js 16 has breaking changes from training data (per AGENTS.md) | Read relevant docs in `node_modules/next/dist/docs/01-app/` before writing App Router code |
+| Next.js 16 renamed `middleware.ts` → `proxy.ts` (per docs) | Use `proxy.ts` at project root with `export const config = { matcher: [...] }` |
+| `react-hook-form` was in early plan; Next.js 16 guide uses Server Actions + Zod | Use Server Actions + Zod + `useActionState` |
 | Auth.js v5 is still beta | Pin to a known-good version, smoke test login before declaring done |
 | SQLite + Prisma `Int` (BigInt) for money in pesewas | Use `Int` and document that amounts are integer pesewas |
 | Schema is bigger than sub-project 1 needs | Acceptable: avoids future migrations, seed still exercises all models |
