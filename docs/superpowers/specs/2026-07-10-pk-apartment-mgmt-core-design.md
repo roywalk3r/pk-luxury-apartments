@@ -43,7 +43,7 @@ Single Next.js 16 application, App Router, server-first. One Prisma-managed SQLi
 | `(tenant)` | `/dashboard`, `/profile` | TENANT |
 | `(admin)` | `/admin/*` | ADMIN, STAFF (read-only on some) |
 
-`middleware.ts` reads the JWT role claim and gates route prefixes.
+`proxy.ts` reads the JWT role claim and gates route prefixes. (Next.js 16 renamed `middleware.ts` → `proxy.ts`.)
 
 ### Layered structure
 
@@ -68,7 +68,7 @@ prisma/
   seed.ts
 tests/
   integration/auth.test.ts
-middleware.ts
+proxy.ts
 ```
 
 ## 4. Data model (full schema — not just core)
@@ -231,7 +231,7 @@ model AuditLog {
 - Passwords: **bcrypt** (12 rounds).
 - Session: **JWT strategy** with `role` claim and `userId`.
 - `/register` is **admin-only** (a staff/admin user creates tenant accounts from the admin panel — no public sign-up, per chapter 3.4.2.1).
-- Middleware: `middleware.ts` checks the JWT role and redirects unauthorized users to `/login` or `/`.
+- Middleware: `proxy.ts` (Next.js 16) reads the JWT role and redirects unauthorized users to `/login` or `/`.
 
 ## 6. Public surfaces (sub-project 1)
 
@@ -267,7 +267,7 @@ All forms use Server Actions with Zod validation and `useActionState` for inline
 | Auth | Auth.js v5 (next-auth@5) | Mature, role-friendly, works with App Router |
 | Password hashing | bcrypt | Standard, simple |
 | Validation | Zod | Per global CLAUDE.md |
-| Forms | react-hook-form + @hookform/resolvers + Zod | Per global CLAUDE.md |
+| Forms | Server Actions + Zod + `useActionState` | Next.js 16 idiom; simpler than react-hook-form for this surface |
 | UI primitives | shadcn/ui (already initialized) | Per global CLAUDE.md |
 | State (server) | React Query (already installed) | Per global CLAUDE.md |
 | Testing | Vitest + @testing-library/react | Standard, fast |
