@@ -400,6 +400,8 @@ export type ActionState = {
   errors?: Record<string, string[]>;
   message?: string;
 } | undefined;
+
+export type ServerAction = (state: ActionState, formData: FormData) => Promise<ActionState>;
 ```
 
 **Step 2: Commit**
@@ -1083,7 +1085,7 @@ import {
 } from "@/components/ui/select";
 
 type Props = {
-  action: (state: any, formData: FormData) => Promise<any>;
+  action: ServerAction;
   defaults?: {
     number?: string;
     type?: string;
@@ -1368,8 +1370,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 type Room = { id: string; number: string; monthlyRent: number };
 
 type Props =
-  | { mode: "create"; action: any; rooms: Room[]; defaults?: undefined; submitLabel?: string }
-  | { mode: "edit"; action: any; rooms?: undefined; defaults: { name: string; phone: string; active: boolean }; submitLabel?: string };
+  | { mode: "create"; action: ServerAction; rooms: Room[]; defaults?: undefined; submitLabel?: string }
+  | { mode: "edit"; action: ServerAction; rooms?: undefined; defaults: { name: string; phone: string; active: boolean }; submitLabel?: string };
 
 export function TenantForm(props: Props) {
   const [state, formAction, pending] = useActionState(props.action, undefined);
