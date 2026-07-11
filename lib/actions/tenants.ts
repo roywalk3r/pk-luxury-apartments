@@ -39,26 +39,35 @@ export async function createTenantAction(_: ActionState, formData: FormData): Pr
   }
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
-  const user = await prisma.user.create({
-    data: {
-      name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone || null,
-      passwordHash,
-      role: "TENANT",
-    },
-  });
-  await prisma.tenancy.create({
-    data: {
-      tenantId: user.id,
-      roomId: parsed.data.roomId,
-      startDate: new Date(),
-      monthlyRent: parsed.data.monthlyRent,
-    },
-  });
-  await prisma.room.update({ where: { id: parsed.data.roomId }, data: { status: "OCCUPIED" } });
-  await prisma.auditLog.create({
-    data: { userId: session.user.id, action: "tenant.create", entityType: "User", entityId: user.id },
+  const user = await prisma.$transaction(async (tx) => {
+    const created = await tx.user.create({
+      data: {
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone || null,
+        passwordHash,
+        role: "TENANT",
+      },
+    });
+    await tx.tenancy.create({
+      data: {
+        tenantId: created.id,
+        roomId: parsed.data.roomId,
+        startDate: new Date(),
+        monthlyRent: parsed.data.monthlyRent,
+      },
+    });
+    const updated = await tx.room.updateMany({
+      where: { id: parsed.data.roomId, status: "AVAILABLE" },
+      data: { status: "OCCUPIED" },
+    });
+    if (updated.count === 0) {
+      throw new Error("Room is not available");
+    }
+    await tx.auditLog.create({
+      data: { userId: session.user.id, action: "tenant.create", entityType: "User", entityId: created.id },
+    });
+    return created;
   });
   revalidatePath("/admin/tenants");
   redirect("/admin/tenants");
