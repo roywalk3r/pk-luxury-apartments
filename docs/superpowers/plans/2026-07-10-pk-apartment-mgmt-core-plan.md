@@ -106,7 +106,7 @@ Replace `prisma/schema.prisma` with:
 
 ```prisma
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../lib/generated/prisma"
 }
 
@@ -319,14 +319,19 @@ If `lib/generated` is in `.gitignore`, remove that line. (Generated client shoul
 **Step 2: Create `lib/db.ts`**
 
 ```typescript
-import { PrismaClient } from "@/lib/generated/prisma";
+import { PrismaClient } from "@/lib/generated/prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 ```
+
+**Note:** Prisma 7 requires a Driver Adapter — `new PrismaClient()` with no options no longer compiles. The `prisma-client` generator (the new Prisma 7 default) only accepts `{ adapter }` or `{ accelerateUrl }` in its options. The previous `datasourceUrl` / `datasources` shape is gone. Run `npm install @prisma/adapter-better-sqlite3` first.
 
 **Step 3: Commit**
 
