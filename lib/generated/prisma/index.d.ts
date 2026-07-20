@@ -1834,6 +1834,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type UtilityBillCountOutputType
+   */
+
+  export type UtilityBillCountOutputType = {
+    payments: number
+  }
+
+  export type UtilityBillCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payments?: boolean | UtilityBillCountOutputTypeCountPaymentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UtilityBillCountOutputType without action
+   */
+  export type UtilityBillCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UtilityBillCountOutputType
+     */
+    select?: UtilityBillCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UtilityBillCountOutputType without action
+   */
+  export type UtilityBillCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RentPaymentWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -5167,6 +5198,7 @@ export namespace Prisma {
     paidAt: Date | null
     reference: string | null
     receiptUrl: string | null
+    billId: string | null
     paystackReference: string | null
     paystackAuthorizationUrl: string | null
     paystackAccessCode: string | null
@@ -5188,6 +5220,7 @@ export namespace Prisma {
     paidAt: Date | null
     reference: string | null
     receiptUrl: string | null
+    billId: string | null
     paystackReference: string | null
     paystackAuthorizationUrl: string | null
     paystackAccessCode: string | null
@@ -5209,6 +5242,7 @@ export namespace Prisma {
     paidAt: number
     reference: number
     receiptUrl: number
+    billId: number
     paystackReference: number
     paystackAuthorizationUrl: number
     paystackAccessCode: number
@@ -5240,6 +5274,7 @@ export namespace Prisma {
     paidAt?: true
     reference?: true
     receiptUrl?: true
+    billId?: true
     paystackReference?: true
     paystackAuthorizationUrl?: true
     paystackAccessCode?: true
@@ -5261,6 +5296,7 @@ export namespace Prisma {
     paidAt?: true
     reference?: true
     receiptUrl?: true
+    billId?: true
     paystackReference?: true
     paystackAuthorizationUrl?: true
     paystackAccessCode?: true
@@ -5282,6 +5318,7 @@ export namespace Prisma {
     paidAt?: true
     reference?: true
     receiptUrl?: true
+    billId?: true
     paystackReference?: true
     paystackAuthorizationUrl?: true
     paystackAccessCode?: true
@@ -5390,6 +5427,7 @@ export namespace Prisma {
     paidAt: Date | null
     reference: string | null
     receiptUrl: string | null
+    billId: string | null
     paystackReference: string | null
     paystackAuthorizationUrl: string | null
     paystackAccessCode: string | null
@@ -5430,6 +5468,7 @@ export namespace Prisma {
     paidAt?: boolean
     reference?: boolean
     receiptUrl?: boolean
+    billId?: boolean
     paystackReference?: boolean
     paystackAuthorizationUrl?: boolean
     paystackAccessCode?: boolean
@@ -5441,6 +5480,7 @@ export namespace Prisma {
     paystackBank?: boolean
     createdAt?: boolean
     tenancy?: boolean | TenancyDefaultArgs<ExtArgs>
+    bill?: boolean | RentPayment$billArgs<ExtArgs>
   }, ExtArgs["result"]["rentPayment"]>
 
 
@@ -5454,6 +5494,7 @@ export namespace Prisma {
     paidAt?: boolean
     reference?: boolean
     receiptUrl?: boolean
+    billId?: boolean
     paystackReference?: boolean
     paystackAuthorizationUrl?: boolean
     paystackAccessCode?: boolean
@@ -5466,15 +5507,17 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type RentPaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenancyId" | "amount" | "method" | "status" | "paidAt" | "reference" | "receiptUrl" | "paystackReference" | "paystackAuthorizationUrl" | "paystackAccessCode" | "paystackTransactionId" | "paystackPaidAt" | "paystackChannel" | "paystackCardType" | "paystackMobileMoneyNumber" | "paystackBank" | "createdAt", ExtArgs["result"]["rentPayment"]>
+  export type RentPaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenancyId" | "amount" | "method" | "status" | "paidAt" | "reference" | "receiptUrl" | "billId" | "paystackReference" | "paystackAuthorizationUrl" | "paystackAccessCode" | "paystackTransactionId" | "paystackPaidAt" | "paystackChannel" | "paystackCardType" | "paystackMobileMoneyNumber" | "paystackBank" | "createdAt", ExtArgs["result"]["rentPayment"]>
   export type RentPaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenancy?: boolean | TenancyDefaultArgs<ExtArgs>
+    bill?: boolean | RentPayment$billArgs<ExtArgs>
   }
 
   export type $RentPaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "RentPayment"
     objects: {
       tenancy: Prisma.$TenancyPayload<ExtArgs>
+      bill: Prisma.$UtilityBillPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5485,6 +5528,7 @@ export namespace Prisma {
       paidAt: Date | null
       reference: string | null
       receiptUrl: string | null
+      billId: string | null
       paystackReference: string | null
       paystackAuthorizationUrl: string | null
       paystackAccessCode: string | null
@@ -5836,6 +5880,7 @@ export namespace Prisma {
   export interface Prisma__RentPaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tenancy<T extends TenancyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenancyDefaultArgs<ExtArgs>>): Prisma__TenancyClient<$Result.GetResult<Prisma.$TenancyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    bill<T extends RentPayment$billArgs<ExtArgs> = {}>(args?: Subset<T, RentPayment$billArgs<ExtArgs>>): Prisma__UtilityBillClient<$Result.GetResult<Prisma.$UtilityBillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5873,6 +5918,7 @@ export namespace Prisma {
     readonly paidAt: FieldRef<"RentPayment", 'DateTime'>
     readonly reference: FieldRef<"RentPayment", 'String'>
     readonly receiptUrl: FieldRef<"RentPayment", 'String'>
+    readonly billId: FieldRef<"RentPayment", 'String'>
     readonly paystackReference: FieldRef<"RentPayment", 'String'>
     readonly paystackAuthorizationUrl: FieldRef<"RentPayment", 'String'>
     readonly paystackAccessCode: FieldRef<"RentPayment", 'String'>
@@ -6231,6 +6277,25 @@ export namespace Prisma {
   }
 
   /**
+   * RentPayment.bill
+   */
+  export type RentPayment$billArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UtilityBill
+     */
+    select?: UtilityBillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UtilityBill
+     */
+    omit?: UtilityBillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UtilityBillInclude<ExtArgs> | null
+    where?: UtilityBillWhereInput
+  }
+
+  /**
    * RentPayment without action
    */
   export type RentPaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6480,6 +6545,8 @@ export namespace Prisma {
     receiptUrl?: boolean
     createdAt?: boolean
     tenancy?: boolean | TenancyDefaultArgs<ExtArgs>
+    payments?: boolean | UtilityBill$paymentsArgs<ExtArgs>
+    _count?: boolean | UtilityBillCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["utilityBill"]>
 
 
@@ -6499,12 +6566,15 @@ export namespace Prisma {
   export type UtilityBillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenancyId" | "type" | "amount" | "dueDate" | "status" | "paidAt" | "receiptUrl" | "createdAt", ExtArgs["result"]["utilityBill"]>
   export type UtilityBillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenancy?: boolean | TenancyDefaultArgs<ExtArgs>
+    payments?: boolean | UtilityBill$paymentsArgs<ExtArgs>
+    _count?: boolean | UtilityBillCountOutputTypeDefaultArgs<ExtArgs>
   }
 
   export type $UtilityBillPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UtilityBill"
     objects: {
       tenancy: Prisma.$TenancyPayload<ExtArgs>
+      payments: Prisma.$RentPaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6857,6 +6927,7 @@ export namespace Prisma {
   export interface Prisma__UtilityBillClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tenancy<T extends TenancyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenancyDefaultArgs<ExtArgs>>): Prisma__TenancyClient<$Result.GetResult<Prisma.$TenancyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    payments<T extends UtilityBill$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, UtilityBill$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RentPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7240,6 +7311,30 @@ export namespace Prisma {
      * Limit how many UtilityBills to delete.
      */
     limit?: number
+  }
+
+  /**
+   * UtilityBill.payments
+   */
+  export type UtilityBill$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RentPayment
+     */
+    select?: RentPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RentPayment
+     */
+    omit?: RentPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RentPaymentInclude<ExtArgs> | null
+    where?: RentPaymentWhereInput
+    orderBy?: RentPaymentOrderByWithRelationInput | RentPaymentOrderByWithRelationInput[]
+    cursor?: RentPaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RentPaymentScalarFieldEnum | RentPaymentScalarFieldEnum[]
   }
 
   /**
@@ -11342,6 +11437,7 @@ export namespace Prisma {
     paidAt: 'paidAt',
     reference: 'reference',
     receiptUrl: 'receiptUrl',
+    billId: 'billId',
     paystackReference: 'paystackReference',
     paystackAuthorizationUrl: 'paystackAuthorizationUrl',
     paystackAccessCode: 'paystackAccessCode',
@@ -11488,6 +11584,7 @@ export namespace Prisma {
     tenancyId: 'tenancyId',
     reference: 'reference',
     receiptUrl: 'receiptUrl',
+    billId: 'billId',
     paystackReference: 'paystackReference',
     paystackAuthorizationUrl: 'paystackAuthorizationUrl',
     paystackAccessCode: 'paystackAccessCode',
@@ -11947,6 +12044,7 @@ export namespace Prisma {
     paidAt?: DateTimeNullableFilter<"RentPayment"> | Date | string | null
     reference?: StringNullableFilter<"RentPayment"> | string | null
     receiptUrl?: StringNullableFilter<"RentPayment"> | string | null
+    billId?: StringNullableFilter<"RentPayment"> | string | null
     paystackReference?: StringNullableFilter<"RentPayment"> | string | null
     paystackAuthorizationUrl?: StringNullableFilter<"RentPayment"> | string | null
     paystackAccessCode?: StringNullableFilter<"RentPayment"> | string | null
@@ -11958,6 +12056,7 @@ export namespace Prisma {
     paystackBank?: StringNullableFilter<"RentPayment"> | string | null
     createdAt?: DateTimeFilter<"RentPayment"> | Date | string
     tenancy?: XOR<TenancyScalarRelationFilter, TenancyWhereInput>
+    bill?: XOR<UtilityBillNullableScalarRelationFilter, UtilityBillWhereInput> | null
   }
 
   export type RentPaymentOrderByWithRelationInput = {
@@ -11969,6 +12068,7 @@ export namespace Prisma {
     paidAt?: SortOrderInput | SortOrder
     reference?: SortOrderInput | SortOrder
     receiptUrl?: SortOrderInput | SortOrder
+    billId?: SortOrderInput | SortOrder
     paystackReference?: SortOrderInput | SortOrder
     paystackAuthorizationUrl?: SortOrderInput | SortOrder
     paystackAccessCode?: SortOrderInput | SortOrder
@@ -11980,6 +12080,7 @@ export namespace Prisma {
     paystackBank?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     tenancy?: TenancyOrderByWithRelationInput
+    bill?: UtilityBillOrderByWithRelationInput
     _relevance?: RentPaymentOrderByRelevanceInput
   }
 
@@ -11996,6 +12097,7 @@ export namespace Prisma {
     paidAt?: DateTimeNullableFilter<"RentPayment"> | Date | string | null
     reference?: StringNullableFilter<"RentPayment"> | string | null
     receiptUrl?: StringNullableFilter<"RentPayment"> | string | null
+    billId?: StringNullableFilter<"RentPayment"> | string | null
     paystackAuthorizationUrl?: StringNullableFilter<"RentPayment"> | string | null
     paystackAccessCode?: StringNullableFilter<"RentPayment"> | string | null
     paystackTransactionId?: StringNullableFilter<"RentPayment"> | string | null
@@ -12006,6 +12108,7 @@ export namespace Prisma {
     paystackBank?: StringNullableFilter<"RentPayment"> | string | null
     createdAt?: DateTimeFilter<"RentPayment"> | Date | string
     tenancy?: XOR<TenancyScalarRelationFilter, TenancyWhereInput>
+    bill?: XOR<UtilityBillNullableScalarRelationFilter, UtilityBillWhereInput> | null
   }, "id" | "paystackReference">
 
   export type RentPaymentOrderByWithAggregationInput = {
@@ -12017,6 +12120,7 @@ export namespace Prisma {
     paidAt?: SortOrderInput | SortOrder
     reference?: SortOrderInput | SortOrder
     receiptUrl?: SortOrderInput | SortOrder
+    billId?: SortOrderInput | SortOrder
     paystackReference?: SortOrderInput | SortOrder
     paystackAuthorizationUrl?: SortOrderInput | SortOrder
     paystackAccessCode?: SortOrderInput | SortOrder
@@ -12046,6 +12150,7 @@ export namespace Prisma {
     paidAt?: DateTimeNullableWithAggregatesFilter<"RentPayment"> | Date | string | null
     reference?: StringNullableWithAggregatesFilter<"RentPayment"> | string | null
     receiptUrl?: StringNullableWithAggregatesFilter<"RentPayment"> | string | null
+    billId?: StringNullableWithAggregatesFilter<"RentPayment"> | string | null
     paystackReference?: StringNullableWithAggregatesFilter<"RentPayment"> | string | null
     paystackAuthorizationUrl?: StringNullableWithAggregatesFilter<"RentPayment"> | string | null
     paystackAccessCode?: StringNullableWithAggregatesFilter<"RentPayment"> | string | null
@@ -12072,6 +12177,7 @@ export namespace Prisma {
     receiptUrl?: StringNullableFilter<"UtilityBill"> | string | null
     createdAt?: DateTimeFilter<"UtilityBill"> | Date | string
     tenancy?: XOR<TenancyScalarRelationFilter, TenancyWhereInput>
+    payments?: RentPaymentListRelationFilter
   }
 
   export type UtilityBillOrderByWithRelationInput = {
@@ -12085,6 +12191,7 @@ export namespace Prisma {
     receiptUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     tenancy?: TenancyOrderByWithRelationInput
+    payments?: RentPaymentOrderByRelationAggregateInput
     _relevance?: UtilityBillOrderByRelevanceInput
   }
 
@@ -12102,6 +12209,7 @@ export namespace Prisma {
     receiptUrl?: StringNullableFilter<"UtilityBill"> | string | null
     createdAt?: DateTimeFilter<"UtilityBill"> | Date | string
     tenancy?: XOR<TenancyScalarRelationFilter, TenancyWhereInput>
+    payments?: RentPaymentListRelationFilter
   }, "id">
 
   export type UtilityBillOrderByWithAggregationInput = {
@@ -12770,6 +12878,7 @@ export namespace Prisma {
     paystackBank?: string | null
     createdAt?: Date | string
     tenancy: TenancyCreateNestedOneWithoutPaymentsInput
+    bill?: UtilityBillCreateNestedOneWithoutPaymentsInput
   }
 
   export type RentPaymentUncheckedCreateInput = {
@@ -12781,6 +12890,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     reference?: string | null
     receiptUrl?: string | null
+    billId?: string | null
     paystackReference?: string | null
     paystackAuthorizationUrl?: string | null
     paystackAccessCode?: string | null
@@ -12812,6 +12922,7 @@ export namespace Prisma {
     paystackBank?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancy?: TenancyUpdateOneRequiredWithoutPaymentsNestedInput
+    bill?: UtilityBillUpdateOneWithoutPaymentsNestedInput
   }
 
   export type RentPaymentUncheckedUpdateInput = {
@@ -12823,6 +12934,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
     paystackReference?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAuthorizationUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAccessCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12844,6 +12956,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     reference?: string | null
     receiptUrl?: string | null
+    billId?: string | null
     paystackReference?: string | null
     paystackAuthorizationUrl?: string | null
     paystackAccessCode?: string | null
@@ -12885,6 +12998,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
     paystackReference?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAuthorizationUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAccessCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12907,6 +13021,7 @@ export namespace Prisma {
     receiptUrl?: string | null
     createdAt?: Date | string
     tenancy: TenancyCreateNestedOneWithoutUtilitiesInput
+    payments?: RentPaymentCreateNestedManyWithoutBillInput
   }
 
   export type UtilityBillUncheckedCreateInput = {
@@ -12919,6 +13034,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     receiptUrl?: string | null
     createdAt?: Date | string
+    payments?: RentPaymentUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type UtilityBillUpdateInput = {
@@ -12931,6 +13047,7 @@ export namespace Prisma {
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancy?: TenancyUpdateOneRequiredWithoutUtilitiesNestedInput
+    payments?: RentPaymentUpdateManyWithoutBillNestedInput
   }
 
   export type UtilityBillUncheckedUpdateInput = {
@@ -12943,6 +13060,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: RentPaymentUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type UtilityBillCreateManyInput = {
@@ -13763,6 +13881,11 @@ export namespace Prisma {
     isNot?: TenancyWhereInput
   }
 
+  export type UtilityBillNullableScalarRelationFilter = {
+    is?: UtilityBillWhereInput | null
+    isNot?: UtilityBillWhereInput | null
+  }
+
   export type RentPaymentOrderByRelevanceInput = {
     fields: RentPaymentOrderByRelevanceFieldEnum | RentPaymentOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -13778,6 +13901,7 @@ export namespace Prisma {
     paidAt?: SortOrder
     reference?: SortOrder
     receiptUrl?: SortOrder
+    billId?: SortOrder
     paystackReference?: SortOrder
     paystackAuthorizationUrl?: SortOrder
     paystackAccessCode?: SortOrder
@@ -13803,6 +13927,7 @@ export namespace Prisma {
     paidAt?: SortOrder
     reference?: SortOrder
     receiptUrl?: SortOrder
+    billId?: SortOrder
     paystackReference?: SortOrder
     paystackAuthorizationUrl?: SortOrder
     paystackAccessCode?: SortOrder
@@ -13824,6 +13949,7 @@ export namespace Prisma {
     paidAt?: SortOrder
     reference?: SortOrder
     receiptUrl?: SortOrder
+    billId?: SortOrder
     paystackReference?: SortOrder
     paystackAuthorizationUrl?: SortOrder
     paystackAccessCode?: SortOrder
@@ -14743,6 +14869,12 @@ export namespace Prisma {
     connect?: TenancyWhereUniqueInput
   }
 
+  export type UtilityBillCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<UtilityBillCreateWithoutPaymentsInput, UtilityBillUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: UtilityBillCreateOrConnectWithoutPaymentsInput
+    connect?: UtilityBillWhereUniqueInput
+  }
+
   export type EnumPaymentMethodFieldUpdateOperationsInput = {
     set?: $Enums.PaymentMethod
   }
@@ -14759,10 +14891,34 @@ export namespace Prisma {
     update?: XOR<XOR<TenancyUpdateToOneWithWhereWithoutPaymentsInput, TenancyUpdateWithoutPaymentsInput>, TenancyUncheckedUpdateWithoutPaymentsInput>
   }
 
+  export type UtilityBillUpdateOneWithoutPaymentsNestedInput = {
+    create?: XOR<UtilityBillCreateWithoutPaymentsInput, UtilityBillUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: UtilityBillCreateOrConnectWithoutPaymentsInput
+    upsert?: UtilityBillUpsertWithoutPaymentsInput
+    disconnect?: UtilityBillWhereInput | boolean
+    delete?: UtilityBillWhereInput | boolean
+    connect?: UtilityBillWhereUniqueInput
+    update?: XOR<XOR<UtilityBillUpdateToOneWithWhereWithoutPaymentsInput, UtilityBillUpdateWithoutPaymentsInput>, UtilityBillUncheckedUpdateWithoutPaymentsInput>
+  }
+
   export type TenancyCreateNestedOneWithoutUtilitiesInput = {
     create?: XOR<TenancyCreateWithoutUtilitiesInput, TenancyUncheckedCreateWithoutUtilitiesInput>
     connectOrCreate?: TenancyCreateOrConnectWithoutUtilitiesInput
     connect?: TenancyWhereUniqueInput
+  }
+
+  export type RentPaymentCreateNestedManyWithoutBillInput = {
+    create?: XOR<RentPaymentCreateWithoutBillInput, RentPaymentUncheckedCreateWithoutBillInput> | RentPaymentCreateWithoutBillInput[] | RentPaymentUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: RentPaymentCreateOrConnectWithoutBillInput | RentPaymentCreateOrConnectWithoutBillInput[]
+    createMany?: RentPaymentCreateManyBillInputEnvelope
+    connect?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+  }
+
+  export type RentPaymentUncheckedCreateNestedManyWithoutBillInput = {
+    create?: XOR<RentPaymentCreateWithoutBillInput, RentPaymentUncheckedCreateWithoutBillInput> | RentPaymentCreateWithoutBillInput[] | RentPaymentUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: RentPaymentCreateOrConnectWithoutBillInput | RentPaymentCreateOrConnectWithoutBillInput[]
+    createMany?: RentPaymentCreateManyBillInputEnvelope
+    connect?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
   }
 
   export type EnumUtilityTypeFieldUpdateOperationsInput = {
@@ -14779,6 +14935,34 @@ export namespace Prisma {
     upsert?: TenancyUpsertWithoutUtilitiesInput
     connect?: TenancyWhereUniqueInput
     update?: XOR<XOR<TenancyUpdateToOneWithWhereWithoutUtilitiesInput, TenancyUpdateWithoutUtilitiesInput>, TenancyUncheckedUpdateWithoutUtilitiesInput>
+  }
+
+  export type RentPaymentUpdateManyWithoutBillNestedInput = {
+    create?: XOR<RentPaymentCreateWithoutBillInput, RentPaymentUncheckedCreateWithoutBillInput> | RentPaymentCreateWithoutBillInput[] | RentPaymentUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: RentPaymentCreateOrConnectWithoutBillInput | RentPaymentCreateOrConnectWithoutBillInput[]
+    upsert?: RentPaymentUpsertWithWhereUniqueWithoutBillInput | RentPaymentUpsertWithWhereUniqueWithoutBillInput[]
+    createMany?: RentPaymentCreateManyBillInputEnvelope
+    set?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    disconnect?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    delete?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    connect?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    update?: RentPaymentUpdateWithWhereUniqueWithoutBillInput | RentPaymentUpdateWithWhereUniqueWithoutBillInput[]
+    updateMany?: RentPaymentUpdateManyWithWhereWithoutBillInput | RentPaymentUpdateManyWithWhereWithoutBillInput[]
+    deleteMany?: RentPaymentScalarWhereInput | RentPaymentScalarWhereInput[]
+  }
+
+  export type RentPaymentUncheckedUpdateManyWithoutBillNestedInput = {
+    create?: XOR<RentPaymentCreateWithoutBillInput, RentPaymentUncheckedCreateWithoutBillInput> | RentPaymentCreateWithoutBillInput[] | RentPaymentUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: RentPaymentCreateOrConnectWithoutBillInput | RentPaymentCreateOrConnectWithoutBillInput[]
+    upsert?: RentPaymentUpsertWithWhereUniqueWithoutBillInput | RentPaymentUpsertWithWhereUniqueWithoutBillInput[]
+    createMany?: RentPaymentCreateManyBillInputEnvelope
+    set?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    disconnect?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    delete?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    connect?: RentPaymentWhereUniqueInput | RentPaymentWhereUniqueInput[]
+    update?: RentPaymentUpdateWithWhereUniqueWithoutBillInput | RentPaymentUpdateWithWhereUniqueWithoutBillInput[]
+    updateMany?: RentPaymentUpdateManyWithWhereWithoutBillInput | RentPaymentUpdateManyWithWhereWithoutBillInput[]
+    deleteMany?: RentPaymentScalarWhereInput | RentPaymentScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutRaisedRequestsInput = {
@@ -15892,6 +16076,7 @@ export namespace Prisma {
     paystackMobileMoneyNumber?: string | null
     paystackBank?: string | null
     createdAt?: Date | string
+    bill?: UtilityBillCreateNestedOneWithoutPaymentsInput
   }
 
   export type RentPaymentUncheckedCreateWithoutTenancyInput = {
@@ -15902,6 +16087,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     reference?: string | null
     receiptUrl?: string | null
+    billId?: string | null
     paystackReference?: string | null
     paystackAuthorizationUrl?: string | null
     paystackAccessCode?: string | null
@@ -15933,6 +16119,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     receiptUrl?: string | null
     createdAt?: Date | string
+    payments?: RentPaymentCreateNestedManyWithoutBillInput
   }
 
   export type UtilityBillUncheckedCreateWithoutTenancyInput = {
@@ -15944,6 +16131,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     receiptUrl?: string | null
     createdAt?: Date | string
+    payments?: RentPaymentUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type UtilityBillCreateOrConnectWithoutTenancyInput = {
@@ -16070,6 +16258,7 @@ export namespace Prisma {
     paidAt?: DateTimeNullableFilter<"RentPayment"> | Date | string | null
     reference?: StringNullableFilter<"RentPayment"> | string | null
     receiptUrl?: StringNullableFilter<"RentPayment"> | string | null
+    billId?: StringNullableFilter<"RentPayment"> | string | null
     paystackReference?: StringNullableFilter<"RentPayment"> | string | null
     paystackAuthorizationUrl?: StringNullableFilter<"RentPayment"> | string | null
     paystackAccessCode?: StringNullableFilter<"RentPayment"> | string | null
@@ -16140,6 +16329,35 @@ export namespace Prisma {
     create: XOR<TenancyCreateWithoutPaymentsInput, TenancyUncheckedCreateWithoutPaymentsInput>
   }
 
+  export type UtilityBillCreateWithoutPaymentsInput = {
+    id?: string
+    type?: $Enums.UtilityType
+    amount: number
+    dueDate: Date | string
+    status?: $Enums.BillStatus
+    paidAt?: Date | string | null
+    receiptUrl?: string | null
+    createdAt?: Date | string
+    tenancy: TenancyCreateNestedOneWithoutUtilitiesInput
+  }
+
+  export type UtilityBillUncheckedCreateWithoutPaymentsInput = {
+    id?: string
+    tenancyId: string
+    type?: $Enums.UtilityType
+    amount: number
+    dueDate: Date | string
+    status?: $Enums.BillStatus
+    paidAt?: Date | string | null
+    receiptUrl?: string | null
+    createdAt?: Date | string
+  }
+
+  export type UtilityBillCreateOrConnectWithoutPaymentsInput = {
+    where: UtilityBillWhereUniqueInput
+    create: XOR<UtilityBillCreateWithoutPaymentsInput, UtilityBillUncheckedCreateWithoutPaymentsInput>
+  }
+
   export type TenancyUpsertWithoutPaymentsInput = {
     update: XOR<TenancyUpdateWithoutPaymentsInput, TenancyUncheckedUpdateWithoutPaymentsInput>
     create: XOR<TenancyCreateWithoutPaymentsInput, TenancyUncheckedCreateWithoutPaymentsInput>
@@ -16173,6 +16391,41 @@ export namespace Prisma {
     utilities?: UtilityBillUncheckedUpdateManyWithoutTenancyNestedInput
   }
 
+  export type UtilityBillUpsertWithoutPaymentsInput = {
+    update: XOR<UtilityBillUpdateWithoutPaymentsInput, UtilityBillUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<UtilityBillCreateWithoutPaymentsInput, UtilityBillUncheckedCreateWithoutPaymentsInput>
+    where?: UtilityBillWhereInput
+  }
+
+  export type UtilityBillUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: UtilityBillWhereInput
+    data: XOR<UtilityBillUpdateWithoutPaymentsInput, UtilityBillUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type UtilityBillUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumUtilityTypeFieldUpdateOperationsInput | $Enums.UtilityType
+    amount?: IntFieldUpdateOperationsInput | number
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenancy?: TenancyUpdateOneRequiredWithoutUtilitiesNestedInput
+  }
+
+  export type UtilityBillUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenancyId?: StringFieldUpdateOperationsInput | string
+    type?: EnumUtilityTypeFieldUpdateOperationsInput | $Enums.UtilityType
+    amount?: IntFieldUpdateOperationsInput | number
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type TenancyCreateWithoutUtilitiesInput = {
     id?: string
     startDate: Date | string
@@ -16198,6 +16451,58 @@ export namespace Prisma {
   export type TenancyCreateOrConnectWithoutUtilitiesInput = {
     where: TenancyWhereUniqueInput
     create: XOR<TenancyCreateWithoutUtilitiesInput, TenancyUncheckedCreateWithoutUtilitiesInput>
+  }
+
+  export type RentPaymentCreateWithoutBillInput = {
+    id?: string
+    amount: number
+    method: $Enums.PaymentMethod
+    status?: $Enums.PaymentStatus
+    paidAt?: Date | string | null
+    reference?: string | null
+    receiptUrl?: string | null
+    paystackReference?: string | null
+    paystackAuthorizationUrl?: string | null
+    paystackAccessCode?: string | null
+    paystackTransactionId?: string | null
+    paystackPaidAt?: Date | string | null
+    paystackChannel?: string | null
+    paystackCardType?: string | null
+    paystackMobileMoneyNumber?: string | null
+    paystackBank?: string | null
+    createdAt?: Date | string
+    tenancy: TenancyCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type RentPaymentUncheckedCreateWithoutBillInput = {
+    id?: string
+    tenancyId: string
+    amount: number
+    method: $Enums.PaymentMethod
+    status?: $Enums.PaymentStatus
+    paidAt?: Date | string | null
+    reference?: string | null
+    receiptUrl?: string | null
+    paystackReference?: string | null
+    paystackAuthorizationUrl?: string | null
+    paystackAccessCode?: string | null
+    paystackTransactionId?: string | null
+    paystackPaidAt?: Date | string | null
+    paystackChannel?: string | null
+    paystackCardType?: string | null
+    paystackMobileMoneyNumber?: string | null
+    paystackBank?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RentPaymentCreateOrConnectWithoutBillInput = {
+    where: RentPaymentWhereUniqueInput
+    create: XOR<RentPaymentCreateWithoutBillInput, RentPaymentUncheckedCreateWithoutBillInput>
+  }
+
+  export type RentPaymentCreateManyBillInputEnvelope = {
+    data: RentPaymentCreateManyBillInput | RentPaymentCreateManyBillInput[]
+    skipDuplicates?: boolean
   }
 
   export type TenancyUpsertWithoutUtilitiesInput = {
@@ -16231,6 +16536,22 @@ export namespace Prisma {
     monthlyRent?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: RentPaymentUncheckedUpdateManyWithoutTenancyNestedInput
+  }
+
+  export type RentPaymentUpsertWithWhereUniqueWithoutBillInput = {
+    where: RentPaymentWhereUniqueInput
+    update: XOR<RentPaymentUpdateWithoutBillInput, RentPaymentUncheckedUpdateWithoutBillInput>
+    create: XOR<RentPaymentCreateWithoutBillInput, RentPaymentUncheckedCreateWithoutBillInput>
+  }
+
+  export type RentPaymentUpdateWithWhereUniqueWithoutBillInput = {
+    where: RentPaymentWhereUniqueInput
+    data: XOR<RentPaymentUpdateWithoutBillInput, RentPaymentUncheckedUpdateWithoutBillInput>
+  }
+
+  export type RentPaymentUpdateManyWithWhereWithoutBillInput = {
+    where: RentPaymentScalarWhereInput
+    data: XOR<RentPaymentUpdateManyMutationInput, RentPaymentUncheckedUpdateManyWithoutBillInput>
   }
 
   export type UserCreateWithoutRaisedRequestsInput = {
@@ -17257,6 +17578,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     reference?: string | null
     receiptUrl?: string | null
+    billId?: string | null
     paystackReference?: string | null
     paystackAuthorizationUrl?: string | null
     paystackAccessCode?: string | null
@@ -17298,6 +17620,7 @@ export namespace Prisma {
     paystackMobileMoneyNumber?: NullableStringFieldUpdateOperationsInput | string | null
     paystackBank?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bill?: UtilityBillUpdateOneWithoutPaymentsNestedInput
   }
 
   export type RentPaymentUncheckedUpdateWithoutTenancyInput = {
@@ -17308,6 +17631,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
     paystackReference?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAuthorizationUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAccessCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17328,6 +17652,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
     paystackReference?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAuthorizationUrl?: NullableStringFieldUpdateOperationsInput | string | null
     paystackAccessCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17349,6 +17674,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: RentPaymentUpdateManyWithoutBillNestedInput
   }
 
   export type UtilityBillUncheckedUpdateWithoutTenancyInput = {
@@ -17360,6 +17686,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: RentPaymentUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type UtilityBillUncheckedUpdateManyWithoutTenancyInput = {
@@ -17370,6 +17697,90 @@ export namespace Prisma {
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RentPaymentCreateManyBillInput = {
+    id?: string
+    tenancyId: string
+    amount: number
+    method: $Enums.PaymentMethod
+    status?: $Enums.PaymentStatus
+    paidAt?: Date | string | null
+    reference?: string | null
+    receiptUrl?: string | null
+    paystackReference?: string | null
+    paystackAuthorizationUrl?: string | null
+    paystackAccessCode?: string | null
+    paystackTransactionId?: string | null
+    paystackPaidAt?: Date | string | null
+    paystackChannel?: string | null
+    paystackCardType?: string | null
+    paystackMobileMoneyNumber?: string | null
+    paystackBank?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RentPaymentUpdateWithoutBillInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackAuthorizationUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackAccessCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackPaidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paystackChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackCardType?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackMobileMoneyNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackBank?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenancy?: TenancyUpdateOneRequiredWithoutPaymentsNestedInput
+  }
+
+  export type RentPaymentUncheckedUpdateWithoutBillInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenancyId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackAuthorizationUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackAccessCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackPaidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paystackChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackCardType?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackMobileMoneyNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackBank?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RentPaymentUncheckedUpdateManyWithoutBillInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenancyId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackReference?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackAuthorizationUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackAccessCode?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackPaidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paystackChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackCardType?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackMobileMoneyNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paystackBank?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

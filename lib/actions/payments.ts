@@ -196,6 +196,76 @@ export async function initiateTenantPayment(_: ActionState, formData: FormData):
   redirect(response.data.authorization_url);
 }
 
+export async function initiateBillPayment(_: ActionState, formData: FormData): Promise<ActionState> {
+  const session = await requireTenant();
+  const billId = formData.get("billId") as string;
+
+  if (!isPaystackConfigured()) {
+    return { message: "Online payment is not configured. Please contact management." };
+  }
+  if (!billId) return { errors: { billId: ["Bill is required"] } };
+
+  const bill = await prisma.utilityBill.findUnique({
+    where: { id: billId },
+    include: { tenancy: { include: { tenant: true, room: true } } },
+  });
+
+  if (!bill) return { errors: { billId: ["Bill not found"] } };
+  if (bill.tenancy.tenantId !== session.user.id) return { message: "Unauthorized" };
+  if (bill.status === "PAID") return { errors: { billId: ["Bill is already paid"] } };
+
+  const reference = generateReference("BILL");
+
+  const payment = await prisma.rentPayment.create({
+    data: {
+      tenancyId: bill.tenancy.id,
+      billId: bill.id,
+      amount: bill.amount,
+      method: "OTHER",
+      status: "PENDING",
+      paystackReference: reference,
+      receiptUrl: `/api/receipts/bill/${bill.id}`,
+    },
+  });
+
+  const appUrl = process.env.PAYSTACK_CALLBACK_BASE_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const callbackUrl = `${appUrl.replace(/\/$/, "")}/payments/verify?bill=1`;
+
+  let response;
+  try {
+    response = await initializePayment({
+      email: bill.tenancy.tenant.email,
+      amount: bill.amount,
+      reference,
+      callbackUrl,
+      metadata: {
+        billId: bill.id,
+        tenancyId: bill.tenancy.id,
+        tenantId: session.user.id,
+        paymentId: payment.id,
+      },
+    });
+  } catch (error) {
+    await prisma.rentPayment.update({ where: { id: payment.id }, data: { status: "FAILED" } });
+    return { message: error instanceof Error ? error.message : "Failed to initialize payment" };
+  }
+
+  if (!response.status || !response.data.authorization_url) {
+    await prisma.rentPayment.update({ where: { id: payment.id }, data: { status: "FAILED" } });
+    return { message: response.message || "Failed to initialize payment" };
+  }
+
+  await prisma.rentPayment.update({
+    where: { id: payment.id },
+    data: {
+      paystackAuthorizationUrl: response.data.authorization_url,
+      paystackAccessCode: response.data.access_code,
+    },
+  });
+
+  redirect(response.data.authorization_url);
+}
+
 export async function verifyPaystackPayment(reference: string): Promise<ActionState> {
   const session = await requireTenant();
 
@@ -205,7 +275,7 @@ export async function verifyPaystackPayment(reference: string): Promise<ActionSt
 
   const existing = await prisma.rentPayment.findUnique({
     where: { paystackReference: reference },
-    include: { tenancy: { include: { tenant: true, room: true } } },
+    include: { bill: { include: { tenancy: { include: { tenant: true, room: true } } } }, tenancy: { include: { tenant: true, room: true } } },
   });
 
   if (!existing) return { message: "Payment record not found" };
@@ -221,44 +291,77 @@ export async function verifyPaystackPayment(reference: string): Promise<ActionSt
 
   const isSuccess = response.data.status === "success";
   const paidAt = response.data.paid_at ? new Date(response.data.paid_at) : new Date();
+  const isBillPayment = Boolean(existing.billId);
 
-  await prisma.rentPayment.update({
-    where: { id: existing.id },
-    data: {
-      status: isSuccess ? "CONFIRMED" : "FAILED",
-      method: response.data.channel === "mobile_money" ? "MOMO" : response.data.channel === "card" ? "VISA" : "OTHER",
-      paidAt: isSuccess ? paidAt : null,
-      paystackTransactionId: reference,
-      paystackPaidAt: paidAt,
-      paystackChannel: response.data.channel,
-      paystackCardType: response.data.card_type || null,
-      paystackBank: response.data.bank || null,
-      paystackMobileMoneyNumber: response.data.authorization?.mobile_money_number || null,
-      reference: reference,
-      receiptUrl: `/api/receipts/${existing.id}`,
-    },
+  await prisma.$transaction(async (tx) => {
+    await tx.rentPayment.update({
+      where: { id: existing.id },
+      data: {
+        status: isSuccess ? "CONFIRMED" : "FAILED",
+        method: response.data.channel === "mobile_money" ? "MOMO" : response.data.channel === "card" ? "VISA" : "OTHER",
+        paidAt: isSuccess ? paidAt : null,
+        paystackTransactionId: reference,
+        paystackPaidAt: paidAt,
+        paystackChannel: response.data.channel,
+        paystackCardType: response.data.card_type || null,
+        paystackBank: response.data.bank || null,
+        paystackMobileMoneyNumber: response.data.authorization?.mobile_money_number || null,
+        reference: reference,
+        receiptUrl: isBillPayment ? `/api/receipts/bill/${existing.billId}` : `/api/receipts/${existing.id}`,
+      },
+    });
+
+    if (isSuccess && existing.billId) {
+      await tx.utilityBill.update({
+        where: { id: existing.billId },
+        data: { status: "PAID", paidAt, receiptUrl: `/api/receipts/bill/${existing.billId}` },
+      });
+    }
   });
 
   if (isSuccess) {
-    await notifyPaymentConfirmation({
-      userId: existing.tenancy.tenantId,
-      tenantName: existing.tenancy.tenant.name,
-      roomNumber: existing.tenancy.room.number,
-      amount: formatCedis(existing.amount),
-      method: response.data.channel,
-      paidAt: paidAt.toLocaleDateString("en-GH"),
-      reference,
-    });
+    const tenantName = existing.tenancy.tenant.name;
+    const roomNumber = existing.tenancy.room.number;
+    const amount = formatCedis(existing.amount);
+    const method = response.data.channel;
+    const paidAtFormatted = paidAt.toLocaleDateString("en-GH");
 
-    await notifyAdmins({
-      subject: "Rent payment received",
-      body: `${existing.tenancy.tenant.name} paid ${formatCedis(existing.amount)} for room ${existing.tenancy.room.number} via ${response.data.channel}. Ref: ${reference}`,
-    });
+    if (isBillPayment && existing.bill) {
+      await notifyPaymentConfirmation({
+        userId: existing.tenancy.tenantId,
+        tenantName,
+        roomNumber,
+        amount,
+        method,
+        paidAt: paidAtFormatted,
+        reference,
+      });
+      await notifyAdmins({
+        subject: "Utility bill payment received",
+        body: `${tenantName} paid water bill ${amount} for room ${roomNumber} via ${method}. Ref: ${reference}`,
+      });
+    } else {
+      await notifyPaymentConfirmation({
+        userId: existing.tenancy.tenantId,
+        tenantName,
+        roomNumber,
+        amount,
+        method,
+        paidAt: paidAtFormatted,
+        reference,
+      });
+      await notifyAdmins({
+        subject: "Rent payment received",
+        body: `${tenantName} paid ${amount} for room ${roomNumber} via ${method}. Ref: ${reference}`,
+      });
+    }
   }
 
   revalidatePath("/payments");
+  revalidatePath("/bills");
   revalidatePath("/dashboard");
   revalidatePath("/admin/payments");
+  revalidatePath("/admin/bills");
   revalidatePath("/admin/dashboard");
 
   return { message: isSuccess ? "Payment successful" : `Payment ${response.data.status}` };

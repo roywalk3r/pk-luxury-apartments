@@ -139,6 +139,7 @@ model RentPayment {
   paidAt                  DateTime?
   reference               String?
   receiptUrl              String?
+  billId                  String?
   // Paystack integration fields
   paystackReference       String?       @unique
   paystackAuthorizationUrl String?
@@ -151,25 +152,28 @@ model RentPayment {
   paystackBank            String?
   createdAt               DateTime      @default(now())
 
-  tenancy Tenancy @relation(fields: [tenancyId], references: [id])
+  tenancy Tenancy    @relation(fields: [tenancyId], references: [id])
+  bill    UtilityBill? @relation(fields: [billId], references: [id])
 
   @@index([tenancyId])
   @@index([status])
   @@index([paystackReference])
+  @@index([billId])
 }
 
 model UtilityBill {
-  id         String      @id @default(cuid())
+  id         String        @id @default(cuid())
   tenancyId  String
-  type       UtilityType @default(WATER)
+  type       UtilityType   @default(WATER)
   amount     Int
   dueDate    DateTime
-  status     BillStatus  @default(UNPAID)
+  status     BillStatus    @default(UNPAID)
   paidAt     DateTime?
   receiptUrl String?
-  createdAt  DateTime    @default(now())
+  createdAt  DateTime      @default(now())
 
-  tenancy Tenancy @relation(fields: [tenancyId], references: [id])
+  tenancy Tenancy       @relation(fields: [tenancyId], references: [id])
+  payments RentPayment[]
 
   @@index([tenancyId])
   @@index([status])
