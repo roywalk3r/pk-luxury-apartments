@@ -3,17 +3,46 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateProfileAction, changePasswordAction } from "@/lib/actions/profile";
+import { updateProfileAction, changePasswordAction, uploadProfileImageAction } from "@/lib/actions/profile";
 import { FormToast } from "@/components/forms/form-toast";
+import { Camera, User } from "lucide-react";
 
 type Props = { user: { id: string; name: string; email: string; phone: string | null; profileImageUrl: string | null } };
 
 export function ProfileForm({ user }: Props) {
   const [profileState, profileAction, profilePending] = useActionState(updateProfileAction, undefined);
+  const [imageState, imageAction, imagePending] = useActionState(uploadProfileImageAction, undefined);
   const [passwordState, passwordAction, passwordPending] = useActionState(changePasswordAction, undefined);
+
+  const currentImage = (imageState?.profileImageUrl as string | undefined) || user.profileImageUrl;
+  const initials = user.name.charAt(0).toUpperCase();
 
   return (
     <div className="space-y-8">
+      <div className="flex items-center gap-4 max-w-md">
+        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted">
+          {currentImage ? (
+            <img src={currentImage} alt={user.name} className="h-full w-full object-cover" />
+          ) : (
+            <User className="h-8 w-8 text-muted-foreground" />
+          )}
+        </div>
+        <form action={imageAction} className="flex flex-1 items-center gap-3">
+          <FormToast state={imageState} />
+          <div className="flex-1 space-y-1">
+            <Label htmlFor="image" className="text-sm font-medium">
+              Profile picture
+            </Label>
+            <Input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" disabled={imagePending} />
+            {imageState?.errors?.image?.[0] && <p className="text-sm text-red-600">{imageState.errors.image[0]}</p>}
+          </div>
+          <Button type="submit" size="sm" disabled={imagePending} className="gap-1">
+            <Camera className="h-4 w-4" />
+            {imagePending ? "Uploading..." : "Upload"}
+          </Button>
+        </form>
+      </div>
+
       <form action={profileAction} className="space-y-4 max-w-md">
         <FormToast state={profileState} />
         <h2 className="text-xl font-semibold">Profile</h2>
@@ -29,10 +58,6 @@ export function ProfileForm({ user }: Props) {
         <div className="space-y-2">
           <Label htmlFor="phone">Phone</Label>
           <Input id="phone" name="phone" defaultValue={user.phone ?? ""} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="profileImageUrl">Profile image URL</Label>
-          <Input id="profileImageUrl" name="profileImageUrl" defaultValue={user.profileImageUrl ?? ""} />
         </div>
         <Button type="submit" disabled={profilePending}>Update profile</Button>
       </form>

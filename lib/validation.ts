@@ -35,7 +35,6 @@ export const UpdateTenantSchema = z.object({
 export const UpdateProfileSchema = z.object({
   name: z.string().min(2),
   phone: z.string().optional().default(""),
-  profileImageUrl: z.string().url().optional().or(z.literal("")),
 });
 
 export const ChangePasswordSchema = z
@@ -48,6 +47,55 @@ export const ChangePasswordSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+
+export const CreatePaymentSchema = z.object({
+  tenancyId: z.string().min(1, "Tenancy is required"),
+  amount: z.coerce.number().int().positive("Amount must be positive (in pesewas)"),
+  method: z.enum(["MOMO", "VISA", "CASH", "OTHER"]),
+  reference: z.string().optional().default(""),
+  paidAt: z.coerce.date().optional(),
+});
+
+export const UpdatePaymentSchema = z.object({
+  status: z.enum(["PENDING", "CONFIRMED", "FAILED"]),
+});
+
+export const CreateUtilityBillSchema = z.object({
+  tenancyId: z.string().min(1, "Tenancy is required"),
+  amount: z.coerce.number().int().positive("Amount must be positive (in pesewas)"),
+  dueDate: z.coerce.date(),
+});
+
+export const UpdateUtilityBillSchema = z.object({
+  status: z.enum(["UNPAID", "PAID", "OVERDUE"]),
+});
+
+export const CreateMaintenanceRequestSchema = z.object({
+  roomId: z.string().min(1, "Room is required"),
+  category: z.string().min(1, "Category is required"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
+});
+
+export const UpdateMaintenanceRequestSchema = z.object({
+  status: z.enum(["OPEN", "ASSIGNED", "IN_PROGRESS", "RESOLVED", "CLOSED"]),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
+  assignedToId: z.string().optional().or(z.literal("")),
+});
+
+export const CreateBookingSchema = z.object({
+  roomId: z.string().min(1, "Room is required"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Enter a valid email"),
+  phone: z.string().min(1, "Phone is required"),
+  preferredMoveInDate: z.coerce.date().optional(),
+  message: z.string().optional().default(""),
+});
+
+export const MarkNotificationReadSchema = z.object({
+  id: z.string().min(1),
+});
 
 export type ActionState = {
   errors?: Record<string, string[]>;

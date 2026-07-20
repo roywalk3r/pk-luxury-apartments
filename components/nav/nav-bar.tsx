@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Building2, Menu, X } from "lucide-react";
+import { Building2, Menu, X, User } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "./notification-bell";
@@ -13,6 +13,7 @@ export function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   if (status === "loading") return null;
   const role = session?.user?.role;
+  const userImage = session?.user?.image;
 
   const publicLinks = [
     { href: "/", label: "Home" },
@@ -76,8 +77,15 @@ export function NavBar() {
           ) : (
             <div className="flex items-center gap-3">
               {role === "TENANT" && <NotificationBell />}
-              <Link href="/profile" className="text-muted-foreground hover:text-foreground">
-                {session.user?.name}
+              <Link href="/profile" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted">
+                  {userImage ? (
+                    <img src={userImage} alt={session.user?.name ?? ""} className="h-full w-full object-cover" />
+                  ) : (
+                    <User className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </span>
+                <span className="hidden sm:inline">{session.user?.name}</span>
               </Link>
               <Button size="sm" variant="ghost" onClick={() => signOut({ callbackUrl: "/login" })} title="Sign out">
                 Sign out
