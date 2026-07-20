@@ -70,6 +70,12 @@ enum NotificationStatus {
   FAILED
 }
 
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
 model User {
   id              String   @id @default(cuid())
   email           String   @unique
@@ -85,6 +91,7 @@ model User {
   tenancies        Tenancy[]            @relation("TenantTenancies")
   assignedRequests MaintenanceRequest[] @relation("AssignedStaff")
   raisedRequests   MaintenanceRequest[] @relation("Requester")
+  bookings         BookingRequest[]
   notifications    Notification[]
   auditLogs        AuditLog[]
 }
@@ -102,6 +109,7 @@ model Room {
 
   tenancies Tenancy[]
   requests  MaintenanceRequest[]
+  bookings  BookingRequest[]
 }
 
 model Tenancy {
@@ -204,6 +212,27 @@ model Notification {
 
   @@index([userId])
   @@index([readAt])
+}
+
+model BookingRequest {
+  id                  String        @id @default(cuid())
+  roomId              String
+  prospectId          String?
+  name                String
+  email               String
+  phone               String
+  preferredMoveInDate DateTime?
+  message             String?
+  status              BookingStatus @default(PENDING)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  room     Room  @relation(fields: [roomId], references: [id])
+  prospect User? @relation(fields: [prospectId], references: [id])
+
+  @@index([roomId])
+  @@index([status])
+  @@index([prospectId])
 }
 
 model AuditLog {

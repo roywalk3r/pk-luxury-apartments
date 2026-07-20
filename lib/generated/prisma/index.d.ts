@@ -49,6 +49,11 @@ export type MaintenanceRequest = $Result.DefaultSelection<Prisma.$MaintenanceReq
  */
 export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 /**
+ * Model BookingRequest
+ * 
+ */
+export type BookingRequest = $Result.DefaultSelection<Prisma.$BookingRequestPayload>
+/**
  * Model AuditLog
  * 
  */
@@ -150,6 +155,15 @@ export const NotificationStatus: {
 
 export type NotificationStatus = (typeof NotificationStatus)[keyof typeof NotificationStatus]
 
+
+export const BookingStatus: {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  REJECTED: 'REJECTED'
+};
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
+
 }
 
 export type Role = $Enums.Role
@@ -191,6 +205,10 @@ export const NotificationChannel: typeof $Enums.NotificationChannel
 export type NotificationStatus = $Enums.NotificationStatus
 
 export const NotificationStatus: typeof $Enums.NotificationStatus
+
+export type BookingStatus = $Enums.BookingStatus
+
+export const BookingStatus: typeof $Enums.BookingStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -382,6 +400,16 @@ export class PrismaClient<
     * ```
     */
   get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.bookingRequest`: Exposes CRUD operations for the **BookingRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BookingRequests
+    * const bookingRequests = await prisma.bookingRequest.findMany()
+    * ```
+    */
+  get bookingRequest(): Prisma.BookingRequestDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
@@ -833,6 +861,7 @@ export namespace Prisma {
     UtilityBill: 'UtilityBill',
     MaintenanceRequest: 'MaintenanceRequest',
     Notification: 'Notification',
+    BookingRequest: 'BookingRequest',
     AuditLog: 'AuditLog'
   };
 
@@ -849,7 +878,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "room" | "tenancy" | "rentPayment" | "utilityBill" | "maintenanceRequest" | "notification" | "auditLog"
+      modelProps: "user" | "room" | "tenancy" | "rentPayment" | "utilityBill" | "maintenanceRequest" | "notification" | "bookingRequest" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1315,6 +1344,72 @@ export namespace Prisma {
           }
         }
       }
+      BookingRequest: {
+        payload: Prisma.$BookingRequestPayload<ExtArgs>
+        fields: Prisma.BookingRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BookingRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BookingRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.BookingRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BookingRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload>
+          }
+          findMany: {
+            args: Prisma.BookingRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload>[]
+          }
+          create: {
+            args: Prisma.BookingRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload>
+          }
+          createMany: {
+            args: Prisma.BookingRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.BookingRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload>
+          }
+          update: {
+            args: Prisma.BookingRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.BookingRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BookingRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BookingRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BookingRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.BookingRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBookingRequest>
+          }
+          groupBy: {
+            args: Prisma.BookingRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BookingRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BookingRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<BookingRequestCountAggregateOutputType> | number
+          }
+        }
+      }
       AuditLog: {
         payload: Prisma.$AuditLogPayload<ExtArgs>
         fields: Prisma.AuditLogFieldRefs
@@ -1496,6 +1591,7 @@ export namespace Prisma {
     utilityBill?: UtilityBillOmit
     maintenanceRequest?: MaintenanceRequestOmit
     notification?: NotificationOmit
+    bookingRequest?: BookingRequestOmit
     auditLog?: AuditLogOmit
   }
 
@@ -1580,6 +1676,7 @@ export namespace Prisma {
     tenancies: number
     assignedRequests: number
     raisedRequests: number
+    bookings: number
     notifications: number
     auditLogs: number
   }
@@ -1588,6 +1685,7 @@ export namespace Prisma {
     tenancies?: boolean | UserCountOutputTypeCountTenanciesArgs
     assignedRequests?: boolean | UserCountOutputTypeCountAssignedRequestsArgs
     raisedRequests?: boolean | UserCountOutputTypeCountRaisedRequestsArgs
+    bookings?: boolean | UserCountOutputTypeCountBookingsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   }
@@ -1627,6 +1725,13 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BookingRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NotificationWhereInput
   }
@@ -1646,11 +1751,13 @@ export namespace Prisma {
   export type RoomCountOutputType = {
     tenancies: number
     requests: number
+    bookings: number
   }
 
   export type RoomCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenancies?: boolean | RoomCountOutputTypeCountTenanciesArgs
     requests?: boolean | RoomCountOutputTypeCountRequestsArgs
+    bookings?: boolean | RoomCountOutputTypeCountBookingsArgs
   }
 
   // Custom InputTypes
@@ -1676,6 +1783,13 @@ export namespace Prisma {
    */
   export type RoomCountOutputTypeCountRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MaintenanceRequestWhereInput
+  }
+
+  /**
+   * RoomCountOutputType without action
+   */
+  export type RoomCountOutputTypeCountBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BookingRequestWhereInput
   }
 
 
@@ -1930,6 +2044,7 @@ export namespace Prisma {
     tenancies?: boolean | User$tenanciesArgs<ExtArgs>
     assignedRequests?: boolean | User$assignedRequestsArgs<ExtArgs>
     raisedRequests?: boolean | User$raisedRequestsArgs<ExtArgs>
+    bookings?: boolean | User$bookingsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1955,6 +2070,7 @@ export namespace Prisma {
     tenancies?: boolean | User$tenanciesArgs<ExtArgs>
     assignedRequests?: boolean | User$assignedRequestsArgs<ExtArgs>
     raisedRequests?: boolean | User$raisedRequestsArgs<ExtArgs>
+    bookings?: boolean | User$bookingsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1966,6 +2082,7 @@ export namespace Prisma {
       tenancies: Prisma.$TenancyPayload<ExtArgs>[]
       assignedRequests: Prisma.$MaintenanceRequestPayload<ExtArgs>[]
       raisedRequests: Prisma.$MaintenanceRequestPayload<ExtArgs>[]
+      bookings: Prisma.$BookingRequestPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     }
@@ -2323,6 +2440,7 @@ export namespace Prisma {
     tenancies<T extends User$tenanciesArgs<ExtArgs> = {}>(args?: Subset<T, User$tenanciesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenancyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignedRequests<T extends User$assignedRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     raisedRequests<T extends User$raisedRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$raisedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    bookings<T extends User$bookingsArgs<ExtArgs> = {}>(args?: Subset<T, User$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -2784,6 +2902,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.bookings
+   */
+  export type User$bookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    where?: BookingRequestWhereInput
+    orderBy?: BookingRequestOrderByWithRelationInput | BookingRequestOrderByWithRelationInput[]
+    cursor?: BookingRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BookingRequestScalarFieldEnum | BookingRequestScalarFieldEnum[]
+  }
+
+  /**
    * User.notifications
    */
   export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3082,6 +3224,7 @@ export namespace Prisma {
     updatedAt?: boolean
     tenancies?: boolean | Room$tenanciesArgs<ExtArgs>
     requests?: boolean | Room$requestsArgs<ExtArgs>
+    bookings?: boolean | Room$bookingsArgs<ExtArgs>
     _count?: boolean | RoomCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["room"]>
 
@@ -3103,6 +3246,7 @@ export namespace Prisma {
   export type RoomInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenancies?: boolean | Room$tenanciesArgs<ExtArgs>
     requests?: boolean | Room$requestsArgs<ExtArgs>
+    bookings?: boolean | Room$bookingsArgs<ExtArgs>
     _count?: boolean | RoomCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -3111,6 +3255,7 @@ export namespace Prisma {
     objects: {
       tenancies: Prisma.$TenancyPayload<ExtArgs>[]
       requests: Prisma.$MaintenanceRequestPayload<ExtArgs>[]
+      bookings: Prisma.$BookingRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3464,6 +3609,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tenancies<T extends Room$tenanciesArgs<ExtArgs> = {}>(args?: Subset<T, Room$tenanciesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenancyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     requests<T extends Room$requestsArgs<ExtArgs> = {}>(args?: Subset<T, Room$requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    bookings<T extends Room$bookingsArgs<ExtArgs> = {}>(args?: Subset<T, Room$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3895,6 +4041,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MaintenanceRequestScalarFieldEnum | MaintenanceRequestScalarFieldEnum[]
+  }
+
+  /**
+   * Room.bookings
+   */
+  export type Room$bookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    where?: BookingRequestWhereInput
+    orderBy?: BookingRequestOrderByWithRelationInput | BookingRequestOrderByWithRelationInput[]
+    cursor?: BookingRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BookingRequestScalarFieldEnum | BookingRequestScalarFieldEnum[]
   }
 
   /**
@@ -9108,6 +9278,1029 @@ export namespace Prisma {
 
 
   /**
+   * Model BookingRequest
+   */
+
+  export type AggregateBookingRequest = {
+    _count: BookingRequestCountAggregateOutputType | null
+    _min: BookingRequestMinAggregateOutputType | null
+    _max: BookingRequestMaxAggregateOutputType | null
+  }
+
+  export type BookingRequestMinAggregateOutputType = {
+    id: string | null
+    roomId: string | null
+    prospectId: string | null
+    name: string | null
+    email: string | null
+    phone: string | null
+    preferredMoveInDate: Date | null
+    message: string | null
+    status: $Enums.BookingStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BookingRequestMaxAggregateOutputType = {
+    id: string | null
+    roomId: string | null
+    prospectId: string | null
+    name: string | null
+    email: string | null
+    phone: string | null
+    preferredMoveInDate: Date | null
+    message: string | null
+    status: $Enums.BookingStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BookingRequestCountAggregateOutputType = {
+    id: number
+    roomId: number
+    prospectId: number
+    name: number
+    email: number
+    phone: number
+    preferredMoveInDate: number
+    message: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BookingRequestMinAggregateInputType = {
+    id?: true
+    roomId?: true
+    prospectId?: true
+    name?: true
+    email?: true
+    phone?: true
+    preferredMoveInDate?: true
+    message?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BookingRequestMaxAggregateInputType = {
+    id?: true
+    roomId?: true
+    prospectId?: true
+    name?: true
+    email?: true
+    phone?: true
+    preferredMoveInDate?: true
+    message?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BookingRequestCountAggregateInputType = {
+    id?: true
+    roomId?: true
+    prospectId?: true
+    name?: true
+    email?: true
+    phone?: true
+    preferredMoveInDate?: true
+    message?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BookingRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BookingRequest to aggregate.
+     */
+    where?: BookingRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BookingRequests to fetch.
+     */
+    orderBy?: BookingRequestOrderByWithRelationInput | BookingRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BookingRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BookingRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BookingRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BookingRequests
+    **/
+    _count?: true | BookingRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BookingRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BookingRequestMaxAggregateInputType
+  }
+
+  export type GetBookingRequestAggregateType<T extends BookingRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateBookingRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBookingRequest[P]>
+      : GetScalarType<T[P], AggregateBookingRequest[P]>
+  }
+
+
+
+
+  export type BookingRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BookingRequestWhereInput
+    orderBy?: BookingRequestOrderByWithAggregationInput | BookingRequestOrderByWithAggregationInput[]
+    by: BookingRequestScalarFieldEnum[] | BookingRequestScalarFieldEnum
+    having?: BookingRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BookingRequestCountAggregateInputType | true
+    _min?: BookingRequestMinAggregateInputType
+    _max?: BookingRequestMaxAggregateInputType
+  }
+
+  export type BookingRequestGroupByOutputType = {
+    id: string
+    roomId: string
+    prospectId: string | null
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate: Date | null
+    message: string | null
+    status: $Enums.BookingStatus
+    createdAt: Date
+    updatedAt: Date
+    _count: BookingRequestCountAggregateOutputType | null
+    _min: BookingRequestMinAggregateOutputType | null
+    _max: BookingRequestMaxAggregateOutputType | null
+  }
+
+  type GetBookingRequestGroupByPayload<T extends BookingRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BookingRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BookingRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BookingRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], BookingRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BookingRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    roomId?: boolean
+    prospectId?: boolean
+    name?: boolean
+    email?: boolean
+    phone?: boolean
+    preferredMoveInDate?: boolean
+    message?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    room?: boolean | RoomDefaultArgs<ExtArgs>
+    prospect?: boolean | BookingRequest$prospectArgs<ExtArgs>
+  }, ExtArgs["result"]["bookingRequest"]>
+
+
+
+  export type BookingRequestSelectScalar = {
+    id?: boolean
+    roomId?: boolean
+    prospectId?: boolean
+    name?: boolean
+    email?: boolean
+    phone?: boolean
+    preferredMoveInDate?: boolean
+    message?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BookingRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "roomId" | "prospectId" | "name" | "email" | "phone" | "preferredMoveInDate" | "message" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["bookingRequest"]>
+  export type BookingRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    room?: boolean | RoomDefaultArgs<ExtArgs>
+    prospect?: boolean | BookingRequest$prospectArgs<ExtArgs>
+  }
+
+  export type $BookingRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BookingRequest"
+    objects: {
+      room: Prisma.$RoomPayload<ExtArgs>
+      prospect: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      roomId: string
+      prospectId: string | null
+      name: string
+      email: string
+      phone: string
+      preferredMoveInDate: Date | null
+      message: string | null
+      status: $Enums.BookingStatus
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["bookingRequest"]>
+    composites: {}
+  }
+
+  type BookingRequestGetPayload<S extends boolean | null | undefined | BookingRequestDefaultArgs> = $Result.GetResult<Prisma.$BookingRequestPayload, S>
+
+  type BookingRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BookingRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BookingRequestCountAggregateInputType | true
+    }
+
+  export interface BookingRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BookingRequest'], meta: { name: 'BookingRequest' } }
+    /**
+     * Find zero or one BookingRequest that matches the filter.
+     * @param {BookingRequestFindUniqueArgs} args - Arguments to find a BookingRequest
+     * @example
+     * // Get one BookingRequest
+     * const bookingRequest = await prisma.bookingRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BookingRequestFindUniqueArgs>(args: SelectSubset<T, BookingRequestFindUniqueArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BookingRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BookingRequestFindUniqueOrThrowArgs} args - Arguments to find a BookingRequest
+     * @example
+     * // Get one BookingRequest
+     * const bookingRequest = await prisma.bookingRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BookingRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, BookingRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BookingRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BookingRequestFindFirstArgs} args - Arguments to find a BookingRequest
+     * @example
+     * // Get one BookingRequest
+     * const bookingRequest = await prisma.bookingRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BookingRequestFindFirstArgs>(args?: SelectSubset<T, BookingRequestFindFirstArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BookingRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BookingRequestFindFirstOrThrowArgs} args - Arguments to find a BookingRequest
+     * @example
+     * // Get one BookingRequest
+     * const bookingRequest = await prisma.bookingRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BookingRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, BookingRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BookingRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BookingRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BookingRequests
+     * const bookingRequests = await prisma.bookingRequest.findMany()
+     * 
+     * // Get first 10 BookingRequests
+     * const bookingRequests = await prisma.bookingRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bookingRequestWithIdOnly = await prisma.bookingRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BookingRequestFindManyArgs>(args?: SelectSubset<T, BookingRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BookingRequest.
+     * @param {BookingRequestCreateArgs} args - Arguments to create a BookingRequest.
+     * @example
+     * // Create one BookingRequest
+     * const BookingRequest = await prisma.bookingRequest.create({
+     *   data: {
+     *     // ... data to create a BookingRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends BookingRequestCreateArgs>(args: SelectSubset<T, BookingRequestCreateArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BookingRequests.
+     * @param {BookingRequestCreateManyArgs} args - Arguments to create many BookingRequests.
+     * @example
+     * // Create many BookingRequests
+     * const bookingRequest = await prisma.bookingRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BookingRequestCreateManyArgs>(args?: SelectSubset<T, BookingRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a BookingRequest.
+     * @param {BookingRequestDeleteArgs} args - Arguments to delete one BookingRequest.
+     * @example
+     * // Delete one BookingRequest
+     * const BookingRequest = await prisma.bookingRequest.delete({
+     *   where: {
+     *     // ... filter to delete one BookingRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BookingRequestDeleteArgs>(args: SelectSubset<T, BookingRequestDeleteArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BookingRequest.
+     * @param {BookingRequestUpdateArgs} args - Arguments to update one BookingRequest.
+     * @example
+     * // Update one BookingRequest
+     * const bookingRequest = await prisma.bookingRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BookingRequestUpdateArgs>(args: SelectSubset<T, BookingRequestUpdateArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BookingRequests.
+     * @param {BookingRequestDeleteManyArgs} args - Arguments to filter BookingRequests to delete.
+     * @example
+     * // Delete a few BookingRequests
+     * const { count } = await prisma.bookingRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BookingRequestDeleteManyArgs>(args?: SelectSubset<T, BookingRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BookingRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BookingRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BookingRequests
+     * const bookingRequest = await prisma.bookingRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BookingRequestUpdateManyArgs>(args: SelectSubset<T, BookingRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BookingRequest.
+     * @param {BookingRequestUpsertArgs} args - Arguments to update or create a BookingRequest.
+     * @example
+     * // Update or create a BookingRequest
+     * const bookingRequest = await prisma.bookingRequest.upsert({
+     *   create: {
+     *     // ... data to create a BookingRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BookingRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BookingRequestUpsertArgs>(args: SelectSubset<T, BookingRequestUpsertArgs<ExtArgs>>): Prisma__BookingRequestClient<$Result.GetResult<Prisma.$BookingRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BookingRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BookingRequestCountArgs} args - Arguments to filter BookingRequests to count.
+     * @example
+     * // Count the number of BookingRequests
+     * const count = await prisma.bookingRequest.count({
+     *   where: {
+     *     // ... the filter for the BookingRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends BookingRequestCountArgs>(
+      args?: Subset<T, BookingRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BookingRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BookingRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BookingRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BookingRequestAggregateArgs>(args: Subset<T, BookingRequestAggregateArgs>): Prisma.PrismaPromise<GetBookingRequestAggregateType<T>>
+
+    /**
+     * Group by BookingRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BookingRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BookingRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BookingRequestGroupByArgs['orderBy'] }
+        : { orderBy?: BookingRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BookingRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBookingRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BookingRequest model
+   */
+  readonly fields: BookingRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BookingRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BookingRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    room<T extends RoomDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RoomDefaultArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    prospect<T extends BookingRequest$prospectArgs<ExtArgs> = {}>(args?: Subset<T, BookingRequest$prospectArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BookingRequest model
+   */
+  interface BookingRequestFieldRefs {
+    readonly id: FieldRef<"BookingRequest", 'String'>
+    readonly roomId: FieldRef<"BookingRequest", 'String'>
+    readonly prospectId: FieldRef<"BookingRequest", 'String'>
+    readonly name: FieldRef<"BookingRequest", 'String'>
+    readonly email: FieldRef<"BookingRequest", 'String'>
+    readonly phone: FieldRef<"BookingRequest", 'String'>
+    readonly preferredMoveInDate: FieldRef<"BookingRequest", 'DateTime'>
+    readonly message: FieldRef<"BookingRequest", 'String'>
+    readonly status: FieldRef<"BookingRequest", 'BookingStatus'>
+    readonly createdAt: FieldRef<"BookingRequest", 'DateTime'>
+    readonly updatedAt: FieldRef<"BookingRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BookingRequest findUnique
+   */
+  export type BookingRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BookingRequest to fetch.
+     */
+    where: BookingRequestWhereUniqueInput
+  }
+
+  /**
+   * BookingRequest findUniqueOrThrow
+   */
+  export type BookingRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BookingRequest to fetch.
+     */
+    where: BookingRequestWhereUniqueInput
+  }
+
+  /**
+   * BookingRequest findFirst
+   */
+  export type BookingRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BookingRequest to fetch.
+     */
+    where?: BookingRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BookingRequests to fetch.
+     */
+    orderBy?: BookingRequestOrderByWithRelationInput | BookingRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BookingRequests.
+     */
+    cursor?: BookingRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BookingRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BookingRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BookingRequests.
+     */
+    distinct?: BookingRequestScalarFieldEnum | BookingRequestScalarFieldEnum[]
+  }
+
+  /**
+   * BookingRequest findFirstOrThrow
+   */
+  export type BookingRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BookingRequest to fetch.
+     */
+    where?: BookingRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BookingRequests to fetch.
+     */
+    orderBy?: BookingRequestOrderByWithRelationInput | BookingRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BookingRequests.
+     */
+    cursor?: BookingRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BookingRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BookingRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BookingRequests.
+     */
+    distinct?: BookingRequestScalarFieldEnum | BookingRequestScalarFieldEnum[]
+  }
+
+  /**
+   * BookingRequest findMany
+   */
+  export type BookingRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which BookingRequests to fetch.
+     */
+    where?: BookingRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BookingRequests to fetch.
+     */
+    orderBy?: BookingRequestOrderByWithRelationInput | BookingRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BookingRequests.
+     */
+    cursor?: BookingRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BookingRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BookingRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BookingRequests.
+     */
+    distinct?: BookingRequestScalarFieldEnum | BookingRequestScalarFieldEnum[]
+  }
+
+  /**
+   * BookingRequest create
+   */
+  export type BookingRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BookingRequest.
+     */
+    data: XOR<BookingRequestCreateInput, BookingRequestUncheckedCreateInput>
+  }
+
+  /**
+   * BookingRequest createMany
+   */
+  export type BookingRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BookingRequests.
+     */
+    data: BookingRequestCreateManyInput | BookingRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BookingRequest update
+   */
+  export type BookingRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BookingRequest.
+     */
+    data: XOR<BookingRequestUpdateInput, BookingRequestUncheckedUpdateInput>
+    /**
+     * Choose, which BookingRequest to update.
+     */
+    where: BookingRequestWhereUniqueInput
+  }
+
+  /**
+   * BookingRequest updateMany
+   */
+  export type BookingRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BookingRequests.
+     */
+    data: XOR<BookingRequestUpdateManyMutationInput, BookingRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which BookingRequests to update
+     */
+    where?: BookingRequestWhereInput
+    /**
+     * Limit how many BookingRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BookingRequest upsert
+   */
+  export type BookingRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BookingRequest to update in case it exists.
+     */
+    where: BookingRequestWhereUniqueInput
+    /**
+     * In case the BookingRequest found by the `where` argument doesn't exist, create a new BookingRequest with this data.
+     */
+    create: XOR<BookingRequestCreateInput, BookingRequestUncheckedCreateInput>
+    /**
+     * In case the BookingRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BookingRequestUpdateInput, BookingRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * BookingRequest delete
+   */
+  export type BookingRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+    /**
+     * Filter which BookingRequest to delete.
+     */
+    where: BookingRequestWhereUniqueInput
+  }
+
+  /**
+   * BookingRequest deleteMany
+   */
+  export type BookingRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BookingRequests to delete
+     */
+    where?: BookingRequestWhereInput
+    /**
+     * Limit how many BookingRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BookingRequest.prospect
+   */
+  export type BookingRequest$prospectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * BookingRequest without action
+   */
+  export type BookingRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BookingRequest
+     */
+    select?: BookingRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BookingRequest
+     */
+    omit?: BookingRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingRequestInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model AuditLog
    */
 
@@ -10212,6 +11405,23 @@ export namespace Prisma {
   export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
+  export const BookingRequestScalarFieldEnum: {
+    id: 'id',
+    roomId: 'roomId',
+    prospectId: 'prospectId',
+    name: 'name',
+    email: 'email',
+    phone: 'phone',
+    preferredMoveInDate: 'preferredMoveInDate',
+    message: 'message',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BookingRequestScalarFieldEnum = (typeof BookingRequestScalarFieldEnum)[keyof typeof BookingRequestScalarFieldEnum]
+
+
   export const AuditLogScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -10321,6 +11531,19 @@ export namespace Prisma {
   };
 
   export type NotificationOrderByRelevanceFieldEnum = (typeof NotificationOrderByRelevanceFieldEnum)[keyof typeof NotificationOrderByRelevanceFieldEnum]
+
+
+  export const BookingRequestOrderByRelevanceFieldEnum: {
+    id: 'id',
+    roomId: 'roomId',
+    prospectId: 'prospectId',
+    name: 'name',
+    email: 'email',
+    phone: 'phone',
+    message: 'message'
+  };
+
+  export type BookingRequestOrderByRelevanceFieldEnum = (typeof BookingRequestOrderByRelevanceFieldEnum)[keyof typeof BookingRequestOrderByRelevanceFieldEnum]
 
 
   export const AuditLogOrderByRelevanceFieldEnum: {
@@ -10439,6 +11662,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'BookingStatus'
+   */
+  export type EnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingStatus'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -10465,6 +11695,7 @@ export namespace Prisma {
     tenancies?: TenancyListRelationFilter
     assignedRequests?: MaintenanceRequestListRelationFilter
     raisedRequests?: MaintenanceRequestListRelationFilter
+    bookings?: BookingRequestListRelationFilter
     notifications?: NotificationListRelationFilter
     auditLogs?: AuditLogListRelationFilter
   }
@@ -10483,6 +11714,7 @@ export namespace Prisma {
     tenancies?: TenancyOrderByRelationAggregateInput
     assignedRequests?: MaintenanceRequestOrderByRelationAggregateInput
     raisedRequests?: MaintenanceRequestOrderByRelationAggregateInput
+    bookings?: BookingRequestOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
@@ -10505,6 +11737,7 @@ export namespace Prisma {
     tenancies?: TenancyListRelationFilter
     assignedRequests?: MaintenanceRequestListRelationFilter
     raisedRequests?: MaintenanceRequestListRelationFilter
+    bookings?: BookingRequestListRelationFilter
     notifications?: NotificationListRelationFilter
     auditLogs?: AuditLogListRelationFilter
   }, "id" | "email">
@@ -10556,6 +11789,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Room"> | Date | string
     tenancies?: TenancyListRelationFilter
     requests?: MaintenanceRequestListRelationFilter
+    bookings?: BookingRequestListRelationFilter
   }
 
   export type RoomOrderByWithRelationInput = {
@@ -10570,6 +11804,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     tenancies?: TenancyOrderByRelationAggregateInput
     requests?: MaintenanceRequestOrderByRelationAggregateInput
+    bookings?: BookingRequestOrderByRelationAggregateInput
     _relevance?: RoomOrderByRelevanceInput
   }
 
@@ -10588,6 +11823,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Room"> | Date | string
     tenancies?: TenancyListRelationFilter
     requests?: MaintenanceRequestListRelationFilter
+    bookings?: BookingRequestListRelationFilter
   }, "id" | "number">
 
   export type RoomOrderByWithAggregationInput = {
@@ -11073,6 +12309,95 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
   }
 
+  export type BookingRequestWhereInput = {
+    AND?: BookingRequestWhereInput | BookingRequestWhereInput[]
+    OR?: BookingRequestWhereInput[]
+    NOT?: BookingRequestWhereInput | BookingRequestWhereInput[]
+    id?: StringFilter<"BookingRequest"> | string
+    roomId?: StringFilter<"BookingRequest"> | string
+    prospectId?: StringNullableFilter<"BookingRequest"> | string | null
+    name?: StringFilter<"BookingRequest"> | string
+    email?: StringFilter<"BookingRequest"> | string
+    phone?: StringFilter<"BookingRequest"> | string
+    preferredMoveInDate?: DateTimeNullableFilter<"BookingRequest"> | Date | string | null
+    message?: StringNullableFilter<"BookingRequest"> | string | null
+    status?: EnumBookingStatusFilter<"BookingRequest"> | $Enums.BookingStatus
+    createdAt?: DateTimeFilter<"BookingRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"BookingRequest"> | Date | string
+    room?: XOR<RoomScalarRelationFilter, RoomWhereInput>
+    prospect?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type BookingRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    roomId?: SortOrder
+    prospectId?: SortOrderInput | SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    preferredMoveInDate?: SortOrderInput | SortOrder
+    message?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    room?: RoomOrderByWithRelationInput
+    prospect?: UserOrderByWithRelationInput
+    _relevance?: BookingRequestOrderByRelevanceInput
+  }
+
+  export type BookingRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BookingRequestWhereInput | BookingRequestWhereInput[]
+    OR?: BookingRequestWhereInput[]
+    NOT?: BookingRequestWhereInput | BookingRequestWhereInput[]
+    roomId?: StringFilter<"BookingRequest"> | string
+    prospectId?: StringNullableFilter<"BookingRequest"> | string | null
+    name?: StringFilter<"BookingRequest"> | string
+    email?: StringFilter<"BookingRequest"> | string
+    phone?: StringFilter<"BookingRequest"> | string
+    preferredMoveInDate?: DateTimeNullableFilter<"BookingRequest"> | Date | string | null
+    message?: StringNullableFilter<"BookingRequest"> | string | null
+    status?: EnumBookingStatusFilter<"BookingRequest"> | $Enums.BookingStatus
+    createdAt?: DateTimeFilter<"BookingRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"BookingRequest"> | Date | string
+    room?: XOR<RoomScalarRelationFilter, RoomWhereInput>
+    prospect?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type BookingRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    roomId?: SortOrder
+    prospectId?: SortOrderInput | SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    preferredMoveInDate?: SortOrderInput | SortOrder
+    message?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BookingRequestCountOrderByAggregateInput
+    _max?: BookingRequestMaxOrderByAggregateInput
+    _min?: BookingRequestMinOrderByAggregateInput
+  }
+
+  export type BookingRequestScalarWhereWithAggregatesInput = {
+    AND?: BookingRequestScalarWhereWithAggregatesInput | BookingRequestScalarWhereWithAggregatesInput[]
+    OR?: BookingRequestScalarWhereWithAggregatesInput[]
+    NOT?: BookingRequestScalarWhereWithAggregatesInput | BookingRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BookingRequest"> | string
+    roomId?: StringWithAggregatesFilter<"BookingRequest"> | string
+    prospectId?: StringNullableWithAggregatesFilter<"BookingRequest"> | string | null
+    name?: StringWithAggregatesFilter<"BookingRequest"> | string
+    email?: StringWithAggregatesFilter<"BookingRequest"> | string
+    phone?: StringWithAggregatesFilter<"BookingRequest"> | string
+    preferredMoveInDate?: DateTimeNullableWithAggregatesFilter<"BookingRequest"> | Date | string | null
+    message?: StringNullableWithAggregatesFilter<"BookingRequest"> | string | null
+    status?: EnumBookingStatusWithAggregatesFilter<"BookingRequest"> | $Enums.BookingStatus
+    createdAt?: DateTimeWithAggregatesFilter<"BookingRequest"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BookingRequest"> | Date | string
+  }
+
   export type AuditLogWhereInput = {
     AND?: AuditLogWhereInput | AuditLogWhereInput[]
     OR?: AuditLogWhereInput[]
@@ -11153,6 +12478,7 @@ export namespace Prisma {
     tenancies?: TenancyCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestCreateNestedManyWithoutProspectInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
@@ -11171,6 +12497,7 @@ export namespace Prisma {
     tenancies?: TenancyUncheckedCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutProspectInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
@@ -11189,6 +12516,7 @@ export namespace Prisma {
     tenancies?: TenancyUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
@@ -11207,6 +12535,7 @@ export namespace Prisma {
     tenancies?: TenancyUncheckedUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -11262,6 +12591,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenancies?: TenancyCreateNestedManyWithoutRoomInput
     requests?: MaintenanceRequestCreateNestedManyWithoutRoomInput
+    bookings?: BookingRequestCreateNestedManyWithoutRoomInput
   }
 
   export type RoomUncheckedCreateInput = {
@@ -11276,6 +12606,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenancies?: TenancyUncheckedCreateNestedManyWithoutRoomInput
     requests?: MaintenanceRequestUncheckedCreateNestedManyWithoutRoomInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutRoomInput
   }
 
   export type RoomUpdateInput = {
@@ -11290,6 +12621,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUpdateManyWithoutRoomNestedInput
     requests?: MaintenanceRequestUpdateManyWithoutRoomNestedInput
+    bookings?: BookingRequestUpdateManyWithoutRoomNestedInput
   }
 
   export type RoomUncheckedUpdateInput = {
@@ -11304,6 +12636,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUncheckedUpdateManyWithoutRoomNestedInput
     requests?: MaintenanceRequestUncheckedUpdateManyWithoutRoomNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutRoomNestedInput
   }
 
   export type RoomCreateManyInput = {
@@ -11832,6 +13165,102 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BookingRequestCreateInput = {
+    id?: string
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    room: RoomCreateNestedOneWithoutBookingsInput
+    prospect?: UserCreateNestedOneWithoutBookingsInput
+  }
+
+  export type BookingRequestUncheckedCreateInput = {
+    id?: string
+    roomId: string
+    prospectId?: string | null
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BookingRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    room?: RoomUpdateOneRequiredWithoutBookingsNestedInput
+    prospect?: UserUpdateOneWithoutBookingsNestedInput
+  }
+
+  export type BookingRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roomId?: StringFieldUpdateOperationsInput | string
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BookingRequestCreateManyInput = {
+    id?: string
+    roomId: string
+    prospectId?: string | null
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BookingRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BookingRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roomId?: StringFieldUpdateOperationsInput | string
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AuditLogCreateInput = {
     id?: string
     action: string
@@ -11966,6 +13395,12 @@ export namespace Prisma {
     none?: MaintenanceRequestWhereInput
   }
 
+  export type BookingRequestListRelationFilter = {
+    every?: BookingRequestWhereInput
+    some?: BookingRequestWhereInput
+    none?: BookingRequestWhereInput
+  }
+
   export type NotificationListRelationFilter = {
     every?: NotificationWhereInput
     some?: NotificationWhereInput
@@ -11988,6 +13423,10 @@ export namespace Prisma {
   }
 
   export type MaintenanceRequestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BookingRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -12671,6 +14110,71 @@ export namespace Prisma {
     _max?: NestedEnumNotificationStatusFilter<$PrismaModel>
   }
 
+  export type EnumBookingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookingStatus | EnumBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BookingStatus[]
+    notIn?: $Enums.BookingStatus[]
+    not?: NestedEnumBookingStatusFilter<$PrismaModel> | $Enums.BookingStatus
+  }
+
+  export type BookingRequestOrderByRelevanceInput = {
+    fields: BookingRequestOrderByRelevanceFieldEnum | BookingRequestOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type BookingRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    roomId?: SortOrder
+    prospectId?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    preferredMoveInDate?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BookingRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    roomId?: SortOrder
+    prospectId?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    preferredMoveInDate?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BookingRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    roomId?: SortOrder
+    prospectId?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    preferredMoveInDate?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumBookingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookingStatus | EnumBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BookingStatus[]
+    notIn?: $Enums.BookingStatus[]
+    not?: NestedEnumBookingStatusWithAggregatesFilter<$PrismaModel> | $Enums.BookingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBookingStatusFilter<$PrismaModel>
+    _max?: NestedEnumBookingStatusFilter<$PrismaModel>
+  }
+
   export type AuditLogOrderByRelevanceInput = {
     fields: AuditLogOrderByRelevanceFieldEnum | AuditLogOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -12728,6 +14232,13 @@ export namespace Prisma {
     connect?: MaintenanceRequestWhereUniqueInput | MaintenanceRequestWhereUniqueInput[]
   }
 
+  export type BookingRequestCreateNestedManyWithoutProspectInput = {
+    create?: XOR<BookingRequestCreateWithoutProspectInput, BookingRequestUncheckedCreateWithoutProspectInput> | BookingRequestCreateWithoutProspectInput[] | BookingRequestUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutProspectInput | BookingRequestCreateOrConnectWithoutProspectInput[]
+    createMany?: BookingRequestCreateManyProspectInputEnvelope
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+  }
+
   export type NotificationCreateNestedManyWithoutUserInput = {
     create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
@@ -12761,6 +14272,13 @@ export namespace Prisma {
     connectOrCreate?: MaintenanceRequestCreateOrConnectWithoutTenantInput | MaintenanceRequestCreateOrConnectWithoutTenantInput[]
     createMany?: MaintenanceRequestCreateManyTenantInputEnvelope
     connect?: MaintenanceRequestWhereUniqueInput | MaintenanceRequestWhereUniqueInput[]
+  }
+
+  export type BookingRequestUncheckedCreateNestedManyWithoutProspectInput = {
+    create?: XOR<BookingRequestCreateWithoutProspectInput, BookingRequestUncheckedCreateWithoutProspectInput> | BookingRequestCreateWithoutProspectInput[] | BookingRequestUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutProspectInput | BookingRequestCreateOrConnectWithoutProspectInput[]
+    createMany?: BookingRequestCreateManyProspectInputEnvelope
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
   }
 
   export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
@@ -12839,6 +14357,20 @@ export namespace Prisma {
     deleteMany?: MaintenanceRequestScalarWhereInput | MaintenanceRequestScalarWhereInput[]
   }
 
+  export type BookingRequestUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<BookingRequestCreateWithoutProspectInput, BookingRequestUncheckedCreateWithoutProspectInput> | BookingRequestCreateWithoutProspectInput[] | BookingRequestUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutProspectInput | BookingRequestCreateOrConnectWithoutProspectInput[]
+    upsert?: BookingRequestUpsertWithWhereUniqueWithoutProspectInput | BookingRequestUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: BookingRequestCreateManyProspectInputEnvelope
+    set?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    disconnect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    delete?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    update?: BookingRequestUpdateWithWhereUniqueWithoutProspectInput | BookingRequestUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: BookingRequestUpdateManyWithWhereWithoutProspectInput | BookingRequestUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: BookingRequestScalarWhereInput | BookingRequestScalarWhereInput[]
+  }
+
   export type NotificationUpdateManyWithoutUserNestedInput = {
     create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
@@ -12909,6 +14441,20 @@ export namespace Prisma {
     deleteMany?: MaintenanceRequestScalarWhereInput | MaintenanceRequestScalarWhereInput[]
   }
 
+  export type BookingRequestUncheckedUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<BookingRequestCreateWithoutProspectInput, BookingRequestUncheckedCreateWithoutProspectInput> | BookingRequestCreateWithoutProspectInput[] | BookingRequestUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutProspectInput | BookingRequestCreateOrConnectWithoutProspectInput[]
+    upsert?: BookingRequestUpsertWithWhereUniqueWithoutProspectInput | BookingRequestUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: BookingRequestCreateManyProspectInputEnvelope
+    set?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    disconnect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    delete?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    update?: BookingRequestUpdateWithWhereUniqueWithoutProspectInput | BookingRequestUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: BookingRequestUpdateManyWithWhereWithoutProspectInput | BookingRequestUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: BookingRequestScalarWhereInput | BookingRequestScalarWhereInput[]
+  }
+
   export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
@@ -12951,6 +14497,13 @@ export namespace Prisma {
     connect?: MaintenanceRequestWhereUniqueInput | MaintenanceRequestWhereUniqueInput[]
   }
 
+  export type BookingRequestCreateNestedManyWithoutRoomInput = {
+    create?: XOR<BookingRequestCreateWithoutRoomInput, BookingRequestUncheckedCreateWithoutRoomInput> | BookingRequestCreateWithoutRoomInput[] | BookingRequestUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutRoomInput | BookingRequestCreateOrConnectWithoutRoomInput[]
+    createMany?: BookingRequestCreateManyRoomInputEnvelope
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+  }
+
   export type TenancyUncheckedCreateNestedManyWithoutRoomInput = {
     create?: XOR<TenancyCreateWithoutRoomInput, TenancyUncheckedCreateWithoutRoomInput> | TenancyCreateWithoutRoomInput[] | TenancyUncheckedCreateWithoutRoomInput[]
     connectOrCreate?: TenancyCreateOrConnectWithoutRoomInput | TenancyCreateOrConnectWithoutRoomInput[]
@@ -12963,6 +14516,13 @@ export namespace Prisma {
     connectOrCreate?: MaintenanceRequestCreateOrConnectWithoutRoomInput | MaintenanceRequestCreateOrConnectWithoutRoomInput[]
     createMany?: MaintenanceRequestCreateManyRoomInputEnvelope
     connect?: MaintenanceRequestWhereUniqueInput | MaintenanceRequestWhereUniqueInput[]
+  }
+
+  export type BookingRequestUncheckedCreateNestedManyWithoutRoomInput = {
+    create?: XOR<BookingRequestCreateWithoutRoomInput, BookingRequestUncheckedCreateWithoutRoomInput> | BookingRequestCreateWithoutRoomInput[] | BookingRequestUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutRoomInput | BookingRequestCreateOrConnectWithoutRoomInput[]
+    createMany?: BookingRequestCreateManyRoomInputEnvelope
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -13005,6 +14565,20 @@ export namespace Prisma {
     deleteMany?: MaintenanceRequestScalarWhereInput | MaintenanceRequestScalarWhereInput[]
   }
 
+  export type BookingRequestUpdateManyWithoutRoomNestedInput = {
+    create?: XOR<BookingRequestCreateWithoutRoomInput, BookingRequestUncheckedCreateWithoutRoomInput> | BookingRequestCreateWithoutRoomInput[] | BookingRequestUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutRoomInput | BookingRequestCreateOrConnectWithoutRoomInput[]
+    upsert?: BookingRequestUpsertWithWhereUniqueWithoutRoomInput | BookingRequestUpsertWithWhereUniqueWithoutRoomInput[]
+    createMany?: BookingRequestCreateManyRoomInputEnvelope
+    set?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    disconnect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    delete?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    update?: BookingRequestUpdateWithWhereUniqueWithoutRoomInput | BookingRequestUpdateWithWhereUniqueWithoutRoomInput[]
+    updateMany?: BookingRequestUpdateManyWithWhereWithoutRoomInput | BookingRequestUpdateManyWithWhereWithoutRoomInput[]
+    deleteMany?: BookingRequestScalarWhereInput | BookingRequestScalarWhereInput[]
+  }
+
   export type TenancyUncheckedUpdateManyWithoutRoomNestedInput = {
     create?: XOR<TenancyCreateWithoutRoomInput, TenancyUncheckedCreateWithoutRoomInput> | TenancyCreateWithoutRoomInput[] | TenancyUncheckedCreateWithoutRoomInput[]
     connectOrCreate?: TenancyCreateOrConnectWithoutRoomInput | TenancyCreateOrConnectWithoutRoomInput[]
@@ -13031,6 +14605,20 @@ export namespace Prisma {
     update?: MaintenanceRequestUpdateWithWhereUniqueWithoutRoomInput | MaintenanceRequestUpdateWithWhereUniqueWithoutRoomInput[]
     updateMany?: MaintenanceRequestUpdateManyWithWhereWithoutRoomInput | MaintenanceRequestUpdateManyWithWhereWithoutRoomInput[]
     deleteMany?: MaintenanceRequestScalarWhereInput | MaintenanceRequestScalarWhereInput[]
+  }
+
+  export type BookingRequestUncheckedUpdateManyWithoutRoomNestedInput = {
+    create?: XOR<BookingRequestCreateWithoutRoomInput, BookingRequestUncheckedCreateWithoutRoomInput> | BookingRequestCreateWithoutRoomInput[] | BookingRequestUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: BookingRequestCreateOrConnectWithoutRoomInput | BookingRequestCreateOrConnectWithoutRoomInput[]
+    upsert?: BookingRequestUpsertWithWhereUniqueWithoutRoomInput | BookingRequestUpsertWithWhereUniqueWithoutRoomInput[]
+    createMany?: BookingRequestCreateManyRoomInputEnvelope
+    set?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    disconnect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    delete?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    connect?: BookingRequestWhereUniqueInput | BookingRequestWhereUniqueInput[]
+    update?: BookingRequestUpdateWithWhereUniqueWithoutRoomInput | BookingRequestUpdateWithWhereUniqueWithoutRoomInput[]
+    updateMany?: BookingRequestUpdateManyWithWhereWithoutRoomInput | BookingRequestUpdateManyWithWhereWithoutRoomInput[]
+    deleteMany?: BookingRequestScalarWhereInput | BookingRequestScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutTenanciesInput = {
@@ -13265,6 +14853,40 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutNotificationsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type RoomCreateNestedOneWithoutBookingsInput = {
+    create?: XOR<RoomCreateWithoutBookingsInput, RoomUncheckedCreateWithoutBookingsInput>
+    connectOrCreate?: RoomCreateOrConnectWithoutBookingsInput
+    connect?: RoomWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutBookingsInput = {
+    create?: XOR<UserCreateWithoutBookingsInput, UserUncheckedCreateWithoutBookingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBookingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumBookingStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BookingStatus
+  }
+
+  export type RoomUpdateOneRequiredWithoutBookingsNestedInput = {
+    create?: XOR<RoomCreateWithoutBookingsInput, RoomUncheckedCreateWithoutBookingsInput>
+    connectOrCreate?: RoomCreateOrConnectWithoutBookingsInput
+    upsert?: RoomUpsertWithoutBookingsInput
+    connect?: RoomWhereUniqueInput
+    update?: XOR<XOR<RoomUpdateToOneWithWhereWithoutBookingsInput, RoomUpdateWithoutBookingsInput>, RoomUncheckedUpdateWithoutBookingsInput>
+  }
+
+  export type UserUpdateOneWithoutBookingsNestedInput = {
+    create?: XOR<UserCreateWithoutBookingsInput, UserUncheckedCreateWithoutBookingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBookingsInput
+    upsert?: UserUpsertWithoutBookingsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBookingsInput, UserUpdateWithoutBookingsInput>, UserUncheckedUpdateWithoutBookingsInput>
   }
 
   export type UserCreateNestedOneWithoutAuditLogsInput = {
@@ -13631,6 +15253,23 @@ export namespace Prisma {
     _max?: NestedEnumNotificationStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumBookingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookingStatus | EnumBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BookingStatus[]
+    notIn?: $Enums.BookingStatus[]
+    not?: NestedEnumBookingStatusFilter<$PrismaModel> | $Enums.BookingStatus
+  }
+
+  export type NestedEnumBookingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookingStatus | EnumBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BookingStatus[]
+    notIn?: $Enums.BookingStatus[]
+    not?: NestedEnumBookingStatusWithAggregatesFilter<$PrismaModel> | $Enums.BookingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBookingStatusFilter<$PrismaModel>
+    _max?: NestedEnumBookingStatusFilter<$PrismaModel>
+  }
+
   export type TenancyCreateWithoutTenantInput = {
     id?: string
     startDate: Date | string
@@ -13736,6 +15375,42 @@ export namespace Prisma {
 
   export type MaintenanceRequestCreateManyTenantInputEnvelope = {
     data: MaintenanceRequestCreateManyTenantInput | MaintenanceRequestCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BookingRequestCreateWithoutProspectInput = {
+    id?: string
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    room: RoomCreateNestedOneWithoutBookingsInput
+  }
+
+  export type BookingRequestUncheckedCreateWithoutProspectInput = {
+    id?: string
+    roomId: string
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BookingRequestCreateOrConnectWithoutProspectInput = {
+    where: BookingRequestWhereUniqueInput
+    create: XOR<BookingRequestCreateWithoutProspectInput, BookingRequestUncheckedCreateWithoutProspectInput>
+  }
+
+  export type BookingRequestCreateManyProspectInputEnvelope = {
+    data: BookingRequestCreateManyProspectInput | BookingRequestCreateManyProspectInput[]
     skipDuplicates?: boolean
   }
 
@@ -13878,6 +15553,39 @@ export namespace Prisma {
     data: XOR<MaintenanceRequestUpdateManyMutationInput, MaintenanceRequestUncheckedUpdateManyWithoutTenantInput>
   }
 
+  export type BookingRequestUpsertWithWhereUniqueWithoutProspectInput = {
+    where: BookingRequestWhereUniqueInput
+    update: XOR<BookingRequestUpdateWithoutProspectInput, BookingRequestUncheckedUpdateWithoutProspectInput>
+    create: XOR<BookingRequestCreateWithoutProspectInput, BookingRequestUncheckedCreateWithoutProspectInput>
+  }
+
+  export type BookingRequestUpdateWithWhereUniqueWithoutProspectInput = {
+    where: BookingRequestWhereUniqueInput
+    data: XOR<BookingRequestUpdateWithoutProspectInput, BookingRequestUncheckedUpdateWithoutProspectInput>
+  }
+
+  export type BookingRequestUpdateManyWithWhereWithoutProspectInput = {
+    where: BookingRequestScalarWhereInput
+    data: XOR<BookingRequestUpdateManyMutationInput, BookingRequestUncheckedUpdateManyWithoutProspectInput>
+  }
+
+  export type BookingRequestScalarWhereInput = {
+    AND?: BookingRequestScalarWhereInput | BookingRequestScalarWhereInput[]
+    OR?: BookingRequestScalarWhereInput[]
+    NOT?: BookingRequestScalarWhereInput | BookingRequestScalarWhereInput[]
+    id?: StringFilter<"BookingRequest"> | string
+    roomId?: StringFilter<"BookingRequest"> | string
+    prospectId?: StringNullableFilter<"BookingRequest"> | string | null
+    name?: StringFilter<"BookingRequest"> | string
+    email?: StringFilter<"BookingRequest"> | string
+    phone?: StringFilter<"BookingRequest"> | string
+    preferredMoveInDate?: DateTimeNullableFilter<"BookingRequest"> | Date | string | null
+    message?: StringNullableFilter<"BookingRequest"> | string | null
+    status?: EnumBookingStatusFilter<"BookingRequest"> | $Enums.BookingStatus
+    createdAt?: DateTimeFilter<"BookingRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"BookingRequest"> | Date | string
+  }
+
   export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
     where: NotificationWhereUniqueInput
     update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
@@ -14008,6 +15716,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BookingRequestCreateWithoutRoomInput = {
+    id?: string
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    prospect?: UserCreateNestedOneWithoutBookingsInput
+  }
+
+  export type BookingRequestUncheckedCreateWithoutRoomInput = {
+    id?: string
+    prospectId?: string | null
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BookingRequestCreateOrConnectWithoutRoomInput = {
+    where: BookingRequestWhereUniqueInput
+    create: XOR<BookingRequestCreateWithoutRoomInput, BookingRequestUncheckedCreateWithoutRoomInput>
+  }
+
+  export type BookingRequestCreateManyRoomInputEnvelope = {
+    data: BookingRequestCreateManyRoomInput | BookingRequestCreateManyRoomInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenancyUpsertWithWhereUniqueWithoutRoomInput = {
     where: TenancyWhereUniqueInput
     update: XOR<TenancyUpdateWithoutRoomInput, TenancyUncheckedUpdateWithoutRoomInput>
@@ -14040,6 +15784,22 @@ export namespace Prisma {
     data: XOR<MaintenanceRequestUpdateManyMutationInput, MaintenanceRequestUncheckedUpdateManyWithoutRoomInput>
   }
 
+  export type BookingRequestUpsertWithWhereUniqueWithoutRoomInput = {
+    where: BookingRequestWhereUniqueInput
+    update: XOR<BookingRequestUpdateWithoutRoomInput, BookingRequestUncheckedUpdateWithoutRoomInput>
+    create: XOR<BookingRequestCreateWithoutRoomInput, BookingRequestUncheckedCreateWithoutRoomInput>
+  }
+
+  export type BookingRequestUpdateWithWhereUniqueWithoutRoomInput = {
+    where: BookingRequestWhereUniqueInput
+    data: XOR<BookingRequestUpdateWithoutRoomInput, BookingRequestUncheckedUpdateWithoutRoomInput>
+  }
+
+  export type BookingRequestUpdateManyWithWhereWithoutRoomInput = {
+    where: BookingRequestScalarWhereInput
+    data: XOR<BookingRequestUpdateManyMutationInput, BookingRequestUncheckedUpdateManyWithoutRoomInput>
+  }
+
   export type UserCreateWithoutTenanciesInput = {
     id?: string
     email: string
@@ -14053,6 +15813,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assignedRequests?: MaintenanceRequestCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestCreateNestedManyWithoutProspectInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
@@ -14070,6 +15831,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assignedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutProspectInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
@@ -14090,6 +15852,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     requests?: MaintenanceRequestCreateNestedManyWithoutRoomInput
+    bookings?: BookingRequestCreateNestedManyWithoutRoomInput
   }
 
   export type RoomUncheckedCreateWithoutTenanciesInput = {
@@ -14103,6 +15866,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     requests?: MaintenanceRequestUncheckedCreateNestedManyWithoutRoomInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutRoomInput
   }
 
   export type RoomCreateOrConnectWithoutTenanciesInput = {
@@ -14216,6 +15980,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRequests?: MaintenanceRequestUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
@@ -14233,6 +15998,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -14259,6 +16025,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requests?: MaintenanceRequestUpdateManyWithoutRoomNestedInput
+    bookings?: BookingRequestUpdateManyWithoutRoomNestedInput
   }
 
   export type RoomUncheckedUpdateWithoutTenanciesInput = {
@@ -14272,6 +16039,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requests?: MaintenanceRequestUncheckedUpdateManyWithoutRoomNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutRoomNestedInput
   }
 
   export type RentPaymentUpsertWithWhereUniqueWithoutTenancyInput = {
@@ -14478,6 +16246,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenancies?: TenancyCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestCreateNestedManyWithoutAssignedToInput
+    bookings?: BookingRequestCreateNestedManyWithoutProspectInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
@@ -14495,6 +16264,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenancies?: TenancyUncheckedCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutAssignedToInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutProspectInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
@@ -14515,6 +16285,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tenancies?: TenancyCreateNestedManyWithoutRoomInput
+    bookings?: BookingRequestCreateNestedManyWithoutRoomInput
   }
 
   export type RoomUncheckedCreateWithoutRequestsInput = {
@@ -14528,6 +16299,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tenancies?: TenancyUncheckedCreateNestedManyWithoutRoomInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutRoomInput
   }
 
   export type RoomCreateOrConnectWithoutRequestsInput = {
@@ -14548,6 +16320,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenancies?: TenancyCreateNestedManyWithoutTenantInput
     raisedRequests?: MaintenanceRequestCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestCreateNestedManyWithoutProspectInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
@@ -14565,6 +16338,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenancies?: TenancyUncheckedCreateNestedManyWithoutTenantInput
     raisedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutProspectInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
@@ -14598,6 +16372,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUpdateManyWithoutAssignedToNestedInput
+    bookings?: BookingRequestUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
@@ -14615,6 +16390,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUncheckedUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -14641,6 +16417,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUpdateManyWithoutRoomNestedInput
+    bookings?: BookingRequestUpdateManyWithoutRoomNestedInput
   }
 
   export type RoomUncheckedUpdateWithoutRequestsInput = {
@@ -14654,6 +16431,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUncheckedUpdateManyWithoutRoomNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutRoomNestedInput
   }
 
   export type UserUpsertWithoutAssignedRequestsInput = {
@@ -14680,6 +16458,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUpdateManyWithoutTenantNestedInput
     raisedRequests?: MaintenanceRequestUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
@@ -14697,6 +16476,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenancies?: TenancyUncheckedUpdateManyWithoutTenantNestedInput
     raisedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -14715,6 +16495,7 @@ export namespace Prisma {
     tenancies?: TenancyCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestCreateNestedManyWithoutProspectInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
@@ -14732,6 +16513,7 @@ export namespace Prisma {
     tenancies?: TenancyUncheckedCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutProspectInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -14765,6 +16547,7 @@ export namespace Prisma {
     tenancies?: TenancyUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUpdateManyWithoutProspectNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
@@ -14782,6 +16565,167 @@ export namespace Prisma {
     tenancies?: TenancyUncheckedUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutProspectNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type RoomCreateWithoutBookingsInput = {
+    id?: string
+    number: string
+    type: string
+    size: string
+    monthlyRent: number
+    status?: $Enums.RoomStatus
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenancies?: TenancyCreateNestedManyWithoutRoomInput
+    requests?: MaintenanceRequestCreateNestedManyWithoutRoomInput
+  }
+
+  export type RoomUncheckedCreateWithoutBookingsInput = {
+    id?: string
+    number: string
+    type: string
+    size: string
+    monthlyRent: number
+    status?: $Enums.RoomStatus
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenancies?: TenancyUncheckedCreateNestedManyWithoutRoomInput
+    requests?: MaintenanceRequestUncheckedCreateNestedManyWithoutRoomInput
+  }
+
+  export type RoomCreateOrConnectWithoutBookingsInput = {
+    where: RoomWhereUniqueInput
+    create: XOR<RoomCreateWithoutBookingsInput, RoomUncheckedCreateWithoutBookingsInput>
+  }
+
+  export type UserCreateWithoutBookingsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    name: string
+    phone?: string | null
+    role?: $Enums.Role
+    profileImageUrl?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenancies?: TenancyCreateNestedManyWithoutTenantInput
+    assignedRequests?: MaintenanceRequestCreateNestedManyWithoutAssignedToInput
+    raisedRequests?: MaintenanceRequestCreateNestedManyWithoutTenantInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBookingsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    name: string
+    phone?: string | null
+    role?: $Enums.Role
+    profileImageUrl?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenancies?: TenancyUncheckedCreateNestedManyWithoutTenantInput
+    assignedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutAssignedToInput
+    raisedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutTenantInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBookingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBookingsInput, UserUncheckedCreateWithoutBookingsInput>
+  }
+
+  export type RoomUpsertWithoutBookingsInput = {
+    update: XOR<RoomUpdateWithoutBookingsInput, RoomUncheckedUpdateWithoutBookingsInput>
+    create: XOR<RoomCreateWithoutBookingsInput, RoomUncheckedCreateWithoutBookingsInput>
+    where?: RoomWhereInput
+  }
+
+  export type RoomUpdateToOneWithWhereWithoutBookingsInput = {
+    where?: RoomWhereInput
+    data: XOR<RoomUpdateWithoutBookingsInput, RoomUncheckedUpdateWithoutBookingsInput>
+  }
+
+  export type RoomUpdateWithoutBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    monthlyRent?: IntFieldUpdateOperationsInput | number
+    status?: EnumRoomStatusFieldUpdateOperationsInput | $Enums.RoomStatus
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenancies?: TenancyUpdateManyWithoutRoomNestedInput
+    requests?: MaintenanceRequestUpdateManyWithoutRoomNestedInput
+  }
+
+  export type RoomUncheckedUpdateWithoutBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    monthlyRent?: IntFieldUpdateOperationsInput | number
+    status?: EnumRoomStatusFieldUpdateOperationsInput | $Enums.RoomStatus
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenancies?: TenancyUncheckedUpdateManyWithoutRoomNestedInput
+    requests?: MaintenanceRequestUncheckedUpdateManyWithoutRoomNestedInput
+  }
+
+  export type UserUpsertWithoutBookingsInput = {
+    update: XOR<UserUpdateWithoutBookingsInput, UserUncheckedUpdateWithoutBookingsInput>
+    create: XOR<UserCreateWithoutBookingsInput, UserUncheckedCreateWithoutBookingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBookingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBookingsInput, UserUncheckedUpdateWithoutBookingsInput>
+  }
+
+  export type UserUpdateWithoutBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenancies?: TenancyUpdateManyWithoutTenantNestedInput
+    assignedRequests?: MaintenanceRequestUpdateManyWithoutAssignedToNestedInput
+    raisedRequests?: MaintenanceRequestUpdateManyWithoutTenantNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenancies?: TenancyUncheckedUpdateManyWithoutTenantNestedInput
+    assignedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutAssignedToNestedInput
+    raisedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutTenantNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -14799,6 +16743,7 @@ export namespace Prisma {
     tenancies?: TenancyCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestCreateNestedManyWithoutProspectInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
@@ -14816,6 +16761,7 @@ export namespace Prisma {
     tenancies?: TenancyUncheckedCreateNestedManyWithoutTenantInput
     assignedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutAssignedToInput
     raisedRequests?: MaintenanceRequestUncheckedCreateNestedManyWithoutTenantInput
+    bookings?: BookingRequestUncheckedCreateNestedManyWithoutProspectInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -14849,6 +16795,7 @@ export namespace Prisma {
     tenancies?: TenancyUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
@@ -14866,6 +16813,7 @@ export namespace Prisma {
     tenancies?: TenancyUncheckedUpdateManyWithoutTenantNestedInput
     assignedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutAssignedToNestedInput
     raisedRequests?: MaintenanceRequestUncheckedUpdateManyWithoutTenantNestedInput
+    bookings?: BookingRequestUncheckedUpdateManyWithoutProspectNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -14904,6 +16852,19 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     resolvedAt?: Date | string | null
+  }
+
+  export type BookingRequestCreateManyProspectInput = {
+    id?: string
+    roomId: string
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type NotificationCreateManyUserInput = {
@@ -15041,6 +17002,45 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type BookingRequestUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    room?: RoomUpdateOneRequiredWithoutBookingsNestedInput
+  }
+
+  export type BookingRequestUncheckedUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roomId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BookingRequestUncheckedUpdateManyWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roomId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type NotificationUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     channel?: EnumNotificationChannelFieldUpdateOperationsInput | $Enums.NotificationChannel
@@ -15124,6 +17124,19 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
   }
 
+  export type BookingRequestCreateManyRoomInput = {
+    id?: string
+    prospectId?: string | null
+    name: string
+    email: string
+    phone: string
+    preferredMoveInDate?: Date | string | null
+    message?: string | null
+    status?: $Enums.BookingStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type TenancyUpdateWithoutRoomInput = {
     id?: StringFieldUpdateOperationsInput | string
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15195,6 +17208,45 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BookingRequestUpdateWithoutRoomInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    prospect?: UserUpdateOneWithoutBookingsNestedInput
+  }
+
+  export type BookingRequestUncheckedUpdateWithoutRoomInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BookingRequestUncheckedUpdateManyWithoutRoomInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    preferredMoveInDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RentPaymentCreateManyTenancyInput = {
