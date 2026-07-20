@@ -104,6 +104,21 @@ export const AnnouncementSchema = z.object({
   sendSms: z.enum(["true", "false"]).optional().default("false"),
 });
 
+export const CreateEquipmentSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  type: z.string().optional().default(""),
+  location: z.string().optional().default(""),
+  serialNumber: z.string().optional().default(""),
+  purchaseDate: z.string().min(1, "Purchase date is required"),
+  lifespanMonths: z.coerce.number().int().positive("Lifespan must be a positive number of months"),
+  warrantyExpiry: z.string().optional().default(""),
+  lastServicedAt: z.string().optional().default(""),
+  status: z.enum(["ACTIVE", "UNDER_MAINTENANCE", "RETIRED", "REPLACED"]).default("ACTIVE"),
+  notes: z.string().optional().default(""),
+});
+
+export const UpdateEquipmentSchema = CreateEquipmentSchema;
+
 export type ActionState = {
   errors?: Record<string, string[]>;
   message?: string;

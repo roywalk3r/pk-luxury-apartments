@@ -28,6 +28,7 @@ export function NavBar() {
     { href: "/admin/payments", label: "Payments" },
     { href: "/admin/bills", label: "Bills" },
     { href: "/admin/maintenance", label: "Maintenance" },
+    { href: "/admin/equipment", label: "Equipment" },
     { href: "/admin/reports", label: "Reports" },
     { href: "/admin/announcements", label: "Announcements" },
   ];
