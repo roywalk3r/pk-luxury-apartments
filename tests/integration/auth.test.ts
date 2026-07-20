@@ -1,15 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import "dotenv/config";
-import { PrismaClient } from "@/lib/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { NextRequest } from "next/server";
 import proxy from "@/proxy";
 
-let prisma: PrismaClient;
-
 beforeAll(async () => {
-  prisma = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" }) });
   const hash = await (await import("bcryptjs")).hash("test1234", 12);
   await prisma.user.upsert({
     where: { email: "testadmin@x.local" },

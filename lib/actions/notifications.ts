@@ -1,0 +1,213 @@
+"use server";
+import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { sendEmail, isEmailConfigured, paymentReceiptEmail, maintenanceUpdateEmail, newBillEmail, bookingRequestEmail } from "@/lib/services/email";
+import { sendSms, isSmsConfigured, paymentReceiptSms, maintenanceUpdateSms, newBillSms, bookingRequestSms } from "@/lib/services/sms";
+
+async function requireAuth() {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  return session;
+}
+
+export async function getMyNotifications() {
+  const session = await requireAuth();
+  return prisma.notification.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+}
+
+export async function getUnreadCount() {
+  const session = await requireAuth();
+  return prisma.notification.count({
+    where: { userId: session.user.id, status: "SENT", readAt: null },
+  });
+}
+
+export async function markNotificationRead(id: string, _formData?: FormData) {
+  const session = await requireAuth();
+  const notification = await prisma.notification.findUnique({ where: { id } });
+  if (!notification || notification.userId !== session.user.id) {
+    throw new Error("Notification not found");
+  }
+  await prisma.notification.update({ where: { id }, data: { readAt: new Date() } });
+  revalidatePath("/dashboard");
+  revalidatePath("/notifications");
+}
+
+export async function notify({
+  userId,
+  subject,
+  body,
+  emailHtml,
+  smsMessage,
+  sendEmail: shouldSendEmail = true,
+  sendSms: shouldSendSms = true,
+}: {
+  userId: string;
+  subject: string;
+  body: string;
+  emailHtml?: string;
+  smsMessage?: string;
+  sendEmail?: boolean;
+  sendSms?: boolean;
+}) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return;
+
+  await prisma.notification.create({
+    data: {
+      userId,
+      channel: "IN_APP",
+      subject,
+      body,
+      status: "SENT",
+      sentAt: new Date(),
+    },
+  });
+
+  if (shouldSendEmail && user.email && emailHtml && isEmailConfigured()) {
+    try {
+      await sendEmail({ to: user.email, subject, html: emailHtml });
+    } catch (err) {
+      console.error("[Notify] Email failed:", err);
+    }
+  }
+
+  if (shouldSendSms && user.phone && smsMessage && isSmsConfigured()) {
+    try {
+      await sendSms({ to: user.phone, message: smsMessage });
+    } catch (err) {
+      console.error("[Notify] SMS failed:", err);
+    }
+  }
+}
+
+export async function notifyPaymentConfirmation({
+  userId,
+  tenantName,
+  roomNumber,
+  amount,
+  method,
+  paidAt,
+  reference,
+}: {
+  userId: string;
+  tenantName: string;
+  roomNumber: string;
+  amount: string;
+  method: string;
+  paidAt: string;
+  reference: string;
+}) {
+  const { subject, html } = paymentReceiptEmail({ tenantName, roomNumber, amount, method, paidAt, reference });
+  const sms = paymentReceiptSms({ amount, reference });
+  await notify({
+    userId,
+    subject,
+    body: `Your rent payment of ${amount} for room ${roomNumber} has been confirmed. Ref: ${reference}.`,
+    emailHtml: html,
+    smsMessage: sms,
+  });
+}
+
+export async function notifyMaintenanceUpdate({
+  userId,
+  tenantName,
+  title,
+  roomNumber,
+  status,
+}: {
+  userId: string;
+  tenantName: string;
+  title: string;
+  roomNumber: string;
+  status: string;
+}) {
+  const { subject, html } = maintenanceUpdateEmail({ tenantName, title, roomNumber, status });
+  const sms = maintenanceUpdateSms({ title, status });
+  await notify({
+    userId,
+    subject,
+    body: `Your maintenance request "${title}" for room ${roomNumber} is now ${status.toLowerCase()}.`,
+    emailHtml: html,
+    smsMessage: sms,
+  });
+}
+
+export async function notifyNewBill({
+  userId,
+  tenantName,
+  roomNumber,
+  amount,
+  dueDate,
+}: {
+  userId: string;
+  tenantName: string;
+  roomNumber: string;
+  amount: string;
+  dueDate: string;
+}) {
+  const { subject, html } = newBillEmail({ tenantName, roomNumber, amount, dueDate });
+  const sms = newBillSms({ amount, dueDate });
+  await notify({
+    userId,
+    subject,
+    body: `A new water bill of ${amount} has been posted for room ${roomNumber}. Due on ${dueDate}.`,
+    emailHtml: html,
+    smsMessage: sms,
+  });
+}
+
+export async function notifyBookingRequest({
+  userId,
+  name,
+  email,
+  phone,
+  roomNumber,
+}: {
+  userId: string;
+  name: string;
+  email: string;
+  phone: string;
+  roomNumber: string;
+}) {
+  const { subject, html } = bookingRequestEmail({ name, email, phone, roomNumber });
+  const sms = bookingRequestSms({ roomNumber });
+  await notify({
+    userId,
+    subject,
+    body: `Your booking request for room ${roomNumber} has been received. We will contact you shortly.`,
+    emailHtml: html,
+    smsMessage: sms,
+  });
+}
+
+export async function notifyAdmins({
+  subject,
+  body,
+  emailHtml,
+  smsMessage,
+}: {
+  subject: string;
+  body: string;
+  emailHtml?: string;
+  smsMessage?: string;
+}) {
+  const admins = await prisma.user.findMany({
+    where: { role: { in: ["ADMIN", "STAFF"] }, active: true },
+  });
+
+  for (const admin of admins) {
+    await notify({
+      userId: admin.id,
+      subject,
+      body,
+      emailHtml,
+      smsMessage,
+    });
+  }
+}

@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
 }
 
 enum Role {
@@ -123,20 +123,31 @@ model Tenancy {
 }
 
 model RentPayment {
-  id         String        @id @default(cuid())
-  tenancyId  String
-  amount     Int
-  method     PaymentMethod
-  status     PaymentStatus @default(PENDING)
-  paidAt     DateTime?
-  reference  String?
-  receiptUrl String?
-  createdAt  DateTime      @default(now())
+  id                      String        @id @default(cuid())
+  tenancyId               String
+  amount                  Int
+  method                  PaymentMethod
+  status                  PaymentStatus @default(PENDING)
+  paidAt                  DateTime?
+  reference               String?
+  receiptUrl              String?
+  // Paystack integration fields
+  paystackReference       String?       @unique
+  paystackAuthorizationUrl String?
+  paystackAccessCode      String?
+  paystackTransactionId   String?
+  paystackPaidAt          DateTime?
+  paystackChannel         String?
+  paystackCardType        String?
+  paystackMobileMoneyNumber String?
+  paystackBank            String?
+  createdAt               DateTime      @default(now())
 
   tenancy Tenancy @relation(fields: [tenancyId], references: [id])
 
   @@index([tenancyId])
   @@index([status])
+  @@index([paystackReference])
 }
 
 model UtilityBill {
@@ -186,11 +197,13 @@ model Notification {
   body      String
   status    NotificationStatus  @default(QUEUED)
   sentAt    DateTime?
+  readAt    DateTime?
   createdAt DateTime            @default(now())
 
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
+  @@index([readAt])
 }
 
 model AuditLog {

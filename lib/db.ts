@@ -1,9 +1,15 @@
 import { PrismaClient } from "@/lib/generated/prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+const databaseUrl = process.env.DATABASE_URL ?? "file:./dev.db";
+const isSqlite = databaseUrl.startsWith("file:");
+
+const adapter = isSqlite
+  ? new PrismaBetterSqlite3({ url: databaseUrl })
+  : new PrismaMariaDb(databaseUrl);
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
