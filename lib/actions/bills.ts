@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { CreateUtilityBillSchema, UpdateUtilityBillSchema, type ActionState } from "@/lib/validation";
 import { redirect } from "next/navigation";
 import { flashMessage } from "@/lib/flash";
-import { notifyNewBill } from "@/lib/actions/notifications";
+import { notify, notifyNewBill, notifyAdmins } from "@/lib/actions/notifications";
 
 async function requireAdmin() {
   const session = await auth();
@@ -82,6 +82,44 @@ export async function updateBillAction(id: string, _: ActionState, formData: For
   revalidatePath("/admin/bills");
   revalidatePath("/dashboard");
   return { message: "Bill updated" };
+}
+
+export async function detectOverdueBillsAction(): Promise<ActionState> {
+  await requireAdmin();
+  const now = new Date();
+  const overdue = await prisma.utilityBill.findMany({
+    where: { status: "UNPAID", dueDate: { lt: now } },
+    include: { tenancy: { include: { tenant: true, room: true } } },
+  });
+  if (overdue.length === 0) return { message: "No overdue bills found" };
+
+  await prisma.$transaction(
+    overdue.map((bill) =>
+      prisma.utilityBill.update({
+        where: { id: bill.id },
+        data: { status: "OVERDUE" },
+      }),
+    ),
+  );
+
+  for (const bill of overdue) {
+    const tenant = bill.tenancy.tenant;
+    const dueDate = new Date(bill.dueDate).toLocaleDateString("en-GH");
+    await notify({
+      userId: tenant.id,
+      subject: "Utility bill overdue",
+      body: `Your water bill of ${formatCedis(bill.amount)} for room ${bill.tenancy.room.number} was due on ${dueDate} and is now overdue.`,
+    });
+    await notifyAdmins({
+      subject: "Utility bill overdue",
+      body: `${tenant.name} has an overdue water bill of ${formatCedis(bill.amount)} for room ${bill.tenancy.room.number} (due ${dueDate}).`,
+    });
+  }
+
+  revalidatePath("/admin/bills");
+  revalidatePath("/admin/dashboard");
+  revalidatePath("/dashboard");
+  return { message: `${overdue.length} bill${overdue.length === 1 ? "" : "s"} marked overdue` };
 }
 
 export async function getTenantBills() {
