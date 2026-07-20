@@ -5,21 +5,62 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { OverdueCheckForm } from "@/components/forms/overdue-check-form";
+import { ReportFilters } from "@/components/forms/report-filters";
+import { ReportExportButton } from "@/components/forms/report-export-button";
 
 function formatCedis(amount: number) {
   return `GHS ${(amount / 100).toFixed(2)}`;
 }
 
-export default async function ReportsPage() {
+type PageProps = {
+  searchParams: Promise<{ from?: string; to?: string; requestStatus?: string }>;
+};
+
+export default async function ReportsPage({ searchParams }: PageProps) {
   const session = await auth();
   if (!session || (session.user.role !== "ADMIN" && session.user.role !== "STAFF")) redirect("/login");
+
+  const { from, to, requestStatus } = await searchParams;
+  const fromDate = from ? new Date(from) : undefined;
+  const toDate = to ? new Date(to) : undefined;
+
+  const dateFilter =
+    fromDate || toDate
+      ? {
+          dueDate: {
+            ...(fromDate && { gte: fromDate }),
+            ...(toDate && { lte: toDate }),
+          },
+        }
+      : {};
+  const paidFilter =
+    fromDate || toDate
+      ? {
+          paidAt: {
+            ...(fromDate && { gte: fromDate }),
+            ...(toDate && { lte: toDate }),
+          },
+        }
+      : {};
 
   const [rooms, tenants, payments, bills, requests] = await Promise.all([
     prisma.room.findMany({ orderBy: { number: "asc" } }),
     prisma.user.findMany({ where: { role: "TENANT" }, orderBy: { name: "asc" } }),
-    prisma.rentPayment.findMany({ include: { tenancy: { include: { tenant: true, room: true } } }, orderBy: { paidAt: "desc" } }),
-    prisma.utilityBill.findMany({ include: { tenancy: { include: { tenant: true, room: true } } }, orderBy: { dueDate: "desc" } }),
-    prisma.maintenanceRequest.findMany({ include: { tenant: true, room: true }, orderBy: { createdAt: "desc" } }),
+    prisma.rentPayment.findMany({
+      where: paidFilter,
+      include: { tenancy: { include: { tenant: true, room: true } } },
+      orderBy: { paidAt: "desc" },
+    }),
+    prisma.utilityBill.findMany({
+      where: dateFilter,
+      include: { tenancy: { include: { tenant: true, room: true } } },
+      orderBy: { dueDate: "desc" },
+    }),
+    prisma.maintenanceRequest.findMany({
+      where: requestStatus ? { status: requestStatus as any } : {},
+      include: { tenant: true, room: true },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
 
   const totalRent = payments.filter((p) => p.status === "CONFIRMED").reduce((sum, p) => sum + p.amount, 0);
@@ -27,10 +68,25 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Reports</h1>
-        <p className="text-muted-foreground">Aggregated data on rooms, tenants, payments, bills and maintenance.</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Reports</h1>
+          <p className="text-muted-foreground">Aggregated data on rooms, tenants, payments, bills and maintenance.</p>
+        </div>
+        <ReportExportButton from={from} to={to} requestStatus={requestStatus} />
       </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div className="space-y-1">
+            <CardTitle>Filters</CardTitle>
+            <p className="text-sm text-muted-foreground">Date range applies to payments and bills; status filters maintenance requests.</p>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <ReportFilters />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card><CardHeader><CardTitle className="text-sm font-medium text-muted-foreground">Total rooms</CardTitle></CardHeader><CardContent><p className="text-3xl font-semibold">{rooms.length}</p></CardContent></Card>

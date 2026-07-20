@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-type FormState = { message?: string; errors?: Record<string, string[]> } | undefined;
+type FormState = { message?: string; errors?: Record<string, string[]>; [key: string]: unknown } | undefined;
 
 export function FormToast({ state }: { state: FormState }) {
   useEffect(() => {
