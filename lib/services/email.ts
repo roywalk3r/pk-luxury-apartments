@@ -243,6 +243,33 @@ export function bookingRequestEmail({
   return { subject, html };
 }
 
+export function rentReminderEmail({
+  tenantName,
+  roomNumber,
+  amount,
+  dueDate,
+}: {
+  tenantName: string;
+  roomNumber: string;
+  amount: string;
+  dueDate: string;
+}) {
+  const subject = `Rent due reminder - Room ${roomNumber}`;
+  const html = shellEmail({
+    title: "Rent due reminder",
+    body: `
+      <p>Dear ${escapeHtml(tenantName)},</p>
+      <p>Your rent for room ${escapeHtml(roomNumber)} is due on ${escapeHtml(dueDate)}.</p>
+      <ul>
+        <li>Amount: ${escapeHtml(amount)}</li>
+        <li>Due date: ${escapeHtml(dueDate)}</li>
+      </ul>
+      <p>Please make payment to avoid penalties.</p>
+    `,
+  });
+  return { subject, html };
+}
+
 export function announcementEmail({ subject, body }: { subject: string; body: string }) {
   const html = shellEmail({
     title: subject,

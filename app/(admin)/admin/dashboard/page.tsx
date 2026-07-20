@@ -20,6 +20,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RentReminderForm } from "@/components/forms/rent-reminder-form";
+import { OverdueCheckForm } from "@/components/forms/overdue-check-form";
 
 function formatCedis(amount: number) {
   return `GHS ${(amount / 100).toFixed(2)}`;
@@ -116,6 +118,19 @@ export default async function AdminDashboardPage() {
           </Link>
         ))}
       </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-primary" />
+            <CardTitle>Quick actions</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center gap-4">
+          <RentReminderForm />
+          <OverdueCheckForm />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">

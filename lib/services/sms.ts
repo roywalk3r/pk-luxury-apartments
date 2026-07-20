@@ -106,6 +106,16 @@ export function bookingRequestSms({
   return `PK Luxury Apartments: Your booking request for room ${roomNumber} has been received. We will contact you shortly.`;
 }
 
+export function rentReminderSms({
+  amount,
+  dueDate,
+}: {
+  amount: string;
+  dueDate: string;
+}) {
+  return `PK Luxury Apartments: Your rent of ${amount} is due on ${dueDate}. Please make payment to avoid penalties.`;
+}
+
 export function announcementSms({ body }: { body: string }) {
   return `PK Luxury Apartments: ${body}`;
 }
