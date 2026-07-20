@@ -4,9 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import {
-  CreateTenantSchema, UpdateTenantSchema, type ActionState,
-} from "@/lib/validation";
+import { CreateTenantSchema, UpdateTenantSchema, type ActionState } from "@/lib/validation";
+import { flashMessage } from "@/lib/flash";
 
 async function requireAdmin() {
   const session = await auth();
@@ -38,14 +37,13 @@ export async function createTenantAction(_: ActionState, formData: FormData): Pr
     return { errors: { roomId: ["Room is not available"] } };
   }
 
-  const passwordHash = await bcrypt.hash(parsed.data.password, 12);
-  const user = await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     const created = await tx.user.create({
       data: {
         name: parsed.data.name,
         email: parsed.data.email,
         phone: parsed.data.phone || null,
-        passwordHash,
+        passwordHash: await bcrypt.hash(parsed.data.password, 12),
         role: "TENANT",
       },
     });
@@ -67,17 +65,13 @@ export async function createTenantAction(_: ActionState, formData: FormData): Pr
     await tx.auditLog.create({
       data: { userId: session.user.id, action: "tenant.create", entityType: "User", entityId: created.id },
     });
-    return created;
   });
   revalidatePath("/admin/tenants");
+  await flashMessage("Tenant created", "success");
   redirect("/admin/tenants");
 }
 
-export async function updateTenantAction(
-  id: string,
-  _: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
+export async function updateTenantAction(id: string, _: ActionState, formData: FormData): Promise<ActionState> {
   const session = await requireAdmin();
   const parsed = UpdateTenantSchema.safeParse({
     name: formData.get("name"),
@@ -94,5 +88,15 @@ export async function updateTenantAction(
   });
   revalidatePath("/admin/tenants");
   revalidatePath(`/admin/tenants/${id}`);
+  await flashMessage("Tenant updated", "success");
   redirect("/admin/tenants");
+}
+
+export async function getAllTenancies() {
+  await requireAdmin();
+  return prisma.tenancy.findMany({
+    where: { endDate: null },
+    include: { tenant: true, room: true },
+    orderBy: { startDate: "desc" },
+  });
 }

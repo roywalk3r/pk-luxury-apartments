@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { CreateRoomSchema, UpdateRoomSchema, type ActionState } from "@/lib/validation";
+import { flashMessage } from "@/lib/flash";
 
 async function requireAdmin() {
   const session = await auth();
@@ -28,14 +29,11 @@ export async function createRoomAction(_: ActionState, formData: FormData): Prom
     data: { userId: session.user.id, action: "room.create", entityType: "Room", entityId: room.id },
   });
   revalidatePath("/admin/rooms");
+  await flashMessage("Room created", "success");
   redirect("/admin/rooms");
 }
 
-export async function updateRoomAction(
-  id: string,
-  _: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
+export async function updateRoomAction(id: string, _: ActionState, formData: FormData): Promise<ActionState> {
   const session = await requireAdmin();
   const parsed = UpdateRoomSchema.safeParse({
     number: formData.get("number"),
@@ -52,6 +50,7 @@ export async function updateRoomAction(
   });
   revalidatePath("/admin/rooms");
   revalidatePath(`/admin/rooms/${id}`);
+  await flashMessage("Room updated", "success");
   redirect("/admin/rooms");
 }
 

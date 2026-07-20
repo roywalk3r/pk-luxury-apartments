@@ -1,26 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+import { ToastProvider } from "@/components/providers/toast-provider";
 
 export const metadata: Metadata = {
-  title: "PK Luxury Apartments",
-  description: "Apartment management system",
+  title: "PK Luxury Apartments | Modern Living in Haatso",
+  description:
+    "PK Luxury Apartments offers modern, secure apartment living in Haatso, Ghana. Browse available rooms, book online, track rent payments, and manage maintenance requests from any device.",
+  keywords: [
+    "apartments",
+    "Haatso",
+    "Ghana",
+    "luxury apartments",
+    "rent",
+    "room booking",
+    "PK Luxury Apartments",
+  ],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}
-    >
-      <body className="min-h-full flex flex-col">
-        <AuthSessionProvider>{children}</AuthSessionProvider>
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <AuthSessionProvider>
+          {children}
+          <ToastProvider />
+        </AuthSessionProvider>
       </body>
     </html>
   );
