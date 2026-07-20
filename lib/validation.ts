@@ -97,6 +97,13 @@ export const MarkNotificationReadSchema = z.object({
   id: z.string().min(1),
 });
 
+export const AnnouncementSchema = z.object({
+  subject: z.string().min(2, "Subject is required"),
+  body: z.string().min(2, "Body is required"),
+  sendEmail: z.enum(["true", "false"]).optional().default("false"),
+  sendSms: z.enum(["true", "false"]).optional().default("false"),
+});
+
 export type ActionState = {
   errors?: Record<string, string[]>;
   message?: string;

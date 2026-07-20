@@ -105,3 +105,7 @@ export function bookingRequestSms({
 }) {
   return `PK Luxury Apartments: Your booking request for room ${roomNumber} has been received. We will contact you shortly.`;
 }
+
+export function announcementSms({ body }: { body: string }) {
+  return `PK Luxury Apartments: ${body}`;
+}

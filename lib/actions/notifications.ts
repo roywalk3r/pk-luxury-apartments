@@ -10,6 +10,7 @@ import {
   maintenanceUpdateEmail,
   newBillEmail,
   bookingRequestEmail,
+  announcementEmail,
 } from "@/lib/services/email";
 import {
   sendSms,
@@ -19,7 +20,9 @@ import {
   maintenanceUpdateSms,
   newBillSms,
   bookingRequestSms,
+  announcementSms,
 } from "@/lib/services/sms";
+import { AnnouncementSchema, type ActionState } from "@/lib/validation";
 
 async function requireAuth() {
   const session = await auth();
@@ -254,4 +257,44 @@ export async function notifyAdmins({
       smsMessage,
     });
   }
+}
+
+export async function sendAnnouncementAction(_state: ActionState, formData: FormData): Promise<ActionState> {
+  const session = await requireAuth();
+  if (!["ADMIN", "STAFF"].includes(session.user.role)) {
+    return { message: "Only admins can send announcements" };
+  }
+
+  const raw = Object.fromEntries(formData.entries());
+  const parsed = AnnouncementSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const { subject, body, sendEmail: sendEmailFlag, sendSms: sendSmsFlag } = parsed.data;
+  const { subject: emailSubject, html } = announcementEmail({ subject, body });
+  const sms = announcementSms({ body });
+  const shouldEmail = sendEmailFlag === "true";
+  const shouldSms = sendSmsFlag === "true";
+
+  const tenants = await prisma.user.findMany({
+    where: { role: "TENANT", active: true },
+    select: { id: true },
+  });
+
+  for (const tenant of tenants) {
+    await notify({
+      userId: tenant.id,
+      subject: emailSubject,
+      body,
+      emailHtml: shouldEmail ? html : undefined,
+      smsMessage: shouldSms ? sms : undefined,
+      sendEmail: shouldEmail,
+      sendSms: shouldSms,
+    });
+  }
+
+  revalidatePath("/admin/announcements");
+  revalidatePath("/notifications");
+  return { message: `Announcement sent to ${tenants.length} tenant${tenants.length === 1 ? "" : "s"}` };
 }

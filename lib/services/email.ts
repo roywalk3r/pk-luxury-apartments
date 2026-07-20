@@ -242,3 +242,11 @@ export function bookingRequestEmail({
   });
   return { subject, html };
 }
+
+export function announcementEmail({ subject, body }: { subject: string; body: string }) {
+  const html = shellEmail({
+    title: subject,
+    body: `<p>Dear tenant,</p><div style="line-height:1.6;">${escapeHtml(body).replace(/\n/g, "<br/>")}</div>`,
+  });
+  return { subject, html };
+}

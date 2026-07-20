@@ -29,6 +29,7 @@ export function NavBar() {
     { href: "/admin/bills", label: "Bills" },
     { href: "/admin/maintenance", label: "Maintenance" },
     { href: "/admin/reports", label: "Reports" },
+    { href: "/admin/announcements", label: "Announcements" },
   ];
 
   const tenantLinks = [
