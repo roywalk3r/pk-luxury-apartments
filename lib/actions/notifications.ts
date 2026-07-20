@@ -2,8 +2,24 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { sendEmail, isEmailConfigured, paymentReceiptEmail, maintenanceUpdateEmail, newBillEmail, bookingRequestEmail } from "@/lib/services/email";
-import { sendSms, isSmsConfigured, paymentReceiptSms, maintenanceUpdateSms, newBillSms, bookingRequestSms } from "@/lib/services/sms";
+import {
+  sendEmail,
+  isEmailConfigured,
+  paymentReceiptEmail,
+  billPaymentReceiptEmail,
+  maintenanceUpdateEmail,
+  newBillEmail,
+  bookingRequestEmail,
+} from "@/lib/services/email";
+import {
+  sendSms,
+  isSmsConfigured,
+  paymentReceiptSms,
+  billPaymentReceiptSms,
+  maintenanceUpdateSms,
+  newBillSms,
+  bookingRequestSms,
+} from "@/lib/services/sms";
 
 async function requireAuth() {
   const session = await auth();
@@ -109,6 +125,34 @@ export async function notifyPaymentConfirmation({
     userId,
     subject,
     body: `Your rent payment of ${amount} for room ${roomNumber} has been confirmed. Ref: ${reference}.`,
+    emailHtml: html,
+    smsMessage: sms,
+  });
+}
+
+export async function notifyBillPaymentConfirmation({
+  userId,
+  tenantName,
+  roomNumber,
+  amount,
+  method,
+  paidAt,
+  reference,
+}: {
+  userId: string;
+  tenantName: string;
+  roomNumber: string;
+  amount: string;
+  method: string;
+  paidAt: string;
+  reference: string;
+}) {
+  const { subject, html } = billPaymentReceiptEmail({ tenantName, roomNumber, amount, method, paidAt, reference });
+  const sms = billPaymentReceiptSms({ amount, reference });
+  await notify({
+    userId,
+    subject,
+    body: `Your water bill payment of ${amount} for room ${roomNumber} has been confirmed. Ref: ${reference}.`,
     emailHtml: html,
     smsMessage: sms,
   });

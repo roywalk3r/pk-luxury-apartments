@@ -6,7 +6,7 @@ import { CreatePaymentSchema, UpdatePaymentSchema, type ActionState } from "@/li
 import { redirect } from "next/navigation";
 import { flashMessage } from "@/lib/flash";
 import { initializePayment, verifyPayment, isPaystackConfigured } from "@/lib/services/paystack";
-import { notifyPaymentConfirmation, notifyAdmins } from "@/lib/actions/notifications";
+import { notifyPaymentConfirmation, notifyBillPaymentConfirmation, notifyAdmins } from "@/lib/actions/notifications";
 
 async function requireAdmin() {
   const session = await auth();
@@ -327,7 +327,7 @@ export async function verifyPaystackPayment(reference: string): Promise<ActionSt
     const paidAtFormatted = paidAt.toLocaleDateString("en-GH");
 
     if (isBillPayment && existing.bill) {
-      await notifyPaymentConfirmation({
+      await notifyBillPaymentConfirmation({
         userId: existing.tenancy.tenantId,
         tenantName,
         roomNumber,
