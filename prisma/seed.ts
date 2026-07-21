@@ -7,25 +7,25 @@ async function main() {
   const tenantHash = await bcrypt.hash("tenant123", 12);
 
   const admin = await prisma.user.upsert({
-    where: { email: "admin@pk.local" },
+    where: { email: "admin@example.com" },
     update: {},
-    create: { email: "admin@pk.local", name: "PK Admin", passwordHash: adminHash, role: "ADMIN" },
+    create: { email: "admin@example.com", name: "PK Admin", passwordHash: adminHash, role: "ADMIN" },
   });
 
   const staff1 = await prisma.user.upsert({
-    where: { email: "staff1@pk.local" },
+    where: { email: "staff1@example.com" },
     update: {},
-    create: { email: "staff1@pk.local", name: "Akua Mansa", passwordHash: staffHash, role: "STAFF" },
+    create: { email: "staff1@example.com", name: "Akua Mansa", passwordHash: staffHash, role: "STAFF" },
   });
-  await prisma.user.upsert({
-    where: { email: "staff2@pk.local" },
+  const staff2 = await prisma.user.upsert({
+    where: { email: "staff2@example.com" },
     update: {},
-    create: { email: "staff2@pk.local", name: "Kofi Asante", passwordHash: staffHash, role: "STAFF" },
+    create: { email: "staff2@example.com", name: "Kofi Asante", passwordHash: staffHash, role: "STAFF" },
   });
 
   const tenantEmails = [
-    "tenant1@pk.local", "tenant2@pk.local", "tenant3@pk.local", "tenant4@pk.local",
-    "tenant5@pk.local", "tenant6@pk.local", "tenant7@pk.local", "tenant8@pk.local",
+    "tenant1@example.com", "tenant2@example.com", "tenant3@example.com", "tenant4@example.com",
+    "tenant5@example.com", "tenant6@example.com", "tenant7@example.com", "tenant8@example.com",
   ];
   const tenantNames = [
     "Ama Owusu", "Yaw Boateng", "Esi Tetteh", "Kojo Mensah",
@@ -37,7 +37,7 @@ async function main() {
       where: { email: tenantEmails[i] },
       update: {},
       create: {
-        email: tenantEmails[i], name: tenantNames[i], passwordHash: tenantHash, role: "TENANT",
+        email: tenantEmails[i], name: tenantNames[i], passwordHash: tenantHash, role: "TENANT", phone: `024000000${i + 1}`,
       },
     });
     tenants.push(t);
@@ -67,27 +67,96 @@ async function main() {
     rooms.push(r);
   }
 
+  const tenancies = [];
   for (let i = 0; i < tenants.length; i++) {
     const room = rooms[i];
     await prisma.room.update({ where: { id: room.id }, data: { status: "OCCUPIED" } });
-    await prisma.tenancy.upsert({
+    const t = await prisma.tenancy.upsert({
       where: { id: `seed-tenancy-${i}` },
       update: {},
       create: {
         id: `seed-tenancy-${i}`,
-        tenantId: tenants[i].id, roomId: room.id, startDate: new Date(), monthlyRent: room.monthlyRent,
+        tenantId: tenants[i].id, roomId: room.id, startDate: new Date(2026, 0, 1), monthlyRent: room.monthlyRent,
+      },
+    });
+    tenancies.push(t);
+  }
+
+  // Demo payments: some confirmed, some pending
+  const paymentData = [
+    { tenancyIdx: 0, amount: 150000, method: "MOMO" as const, status: "CONFIRMED" as const, monthsAgo: 0 },
+    { tenancyIdx: 0, amount: 150000, method: "MOMO" as const, status: "CONFIRMED" as const, monthsAgo: 1 },
+    { tenancyIdx: 1, amount: 160000, method: "CASH" as const, status: "CONFIRMED" as const, monthsAgo: 0 },
+    { tenancyIdx: 2, amount: 175000, method: "VISA" as const, status: "PENDING" as const, monthsAgo: 0 },
+    { tenancyIdx: 3, amount: 250000, method: "MOMO" as const, status: "CONFIRMED" as const, monthsAgo: 0 },
+    { tenancyIdx: 4, amount: 260000, method: "MOMO" as const, status: "CONFIRMED" as const, monthsAgo: 1 },
+    { tenancyIdx: 5, amount: 165000, method: "OTHER" as const, status: "CONFIRMED" as const, monthsAgo: 0 },
+    { tenancyIdx: 6, amount: 120000, method: "MOMO" as const, status: "CONFIRMED" as const, monthsAgo: 2 },
+  ];
+  for (const p of paymentData) {
+    const paidAt = new Date();
+    paidAt.setMonth(paidAt.getMonth() - p.monthsAgo);
+    const payment = await prisma.rentPayment.create({
+      data: {
+        tenancyId: tenancies[p.tenancyIdx].id,
+        amount: p.amount,
+        method: p.method,
+        status: p.status,
+        paidAt,
+        reference: `REF-${Math.floor(Math.random() * 1000000)}`,
+        receiptUrl: "",
+      },
+    });
+    await prisma.rentPayment.update({
+      where: { id: payment.id },
+      data: { receiptUrl: `/api/receipts/${payment.id}` },
+    });
+  }
+
+  // Demo utility bills
+  const billData = [
+    { tenancyIdx: 0, amount: 8000, status: "PAID" as const, dueOffset: -10 },
+    { tenancyIdx: 0, amount: 6500, status: "UNPAID" as const, dueOffset: 15 },
+    { tenancyIdx: 1, amount: 7200, status: "PAID" as const, dueOffset: -5 },
+    { tenancyIdx: 3, amount: 9500, status: "OVERDUE" as const, dueOffset: -20 },
+    { tenancyIdx: 5, amount: 6000, status: "UNPAID" as const, dueOffset: 10 },
+  ];
+  for (const b of billData) {
+    const due = new Date();
+    due.setDate(due.getDate() + b.dueOffset);
+    await prisma.utilityBill.create({
+      data: {
+        tenancyId: tenancies[b.tenancyIdx].id,
+        amount: b.amount,
+        dueDate: due,
+        status: b.status,
+        paidAt: b.status === "PAID" ? new Date() : null,
       },
     });
   }
 
-  const openReq = await prisma.maintenanceRequest.create({
-    data: {
-      tenantId: tenants[0].id, roomId: rooms[0].id,
-      category: "Plumbing", title: "Leaking kitchen tap",
-      description: "The kitchen tap drips constantly.",
-      status: "OPEN", priority: "MEDIUM",
-    },
-  });
+  // Demo maintenance requests
+  const requestData = [
+    { tenantIdx: 0, roomIdx: 0, category: "Plumbing", title: "Leaking kitchen tap", description: "The kitchen tap drips constantly even when turned off tightly.", status: "OPEN" as const, priority: "MEDIUM" as const },
+    { tenantIdx: 1, roomIdx: 1, category: "Electrical", title: "Bedroom socket not working", description: "The socket near the bed stopped working after a power surge.", status: "ASSIGNED" as const, priority: "HIGH" as const, assignedToId: staff1.id },
+    { tenantIdx: 3, roomIdx: 3, category: "Carpentry", title: "Loose wardrobe door", description: "The left wardrobe door hinge is loose and the door does not close.", status: "IN_PROGRESS" as const, priority: "LOW" as const, assignedToId: staff2.id },
+    { tenantIdx: 5, roomIdx: 5, category: "Appliance", title: "Air conditioner noisy", description: "The AC unit makes a loud rattling sound when cooling.", status: "RESOLVED" as const, priority: "MEDIUM" as const, assignedToId: staff1.id },
+  ];
+  for (const r of requestData) {
+    await prisma.maintenanceRequest.create({
+      data: {
+        tenantId: tenants[r.tenantIdx].id,
+        roomId: rooms[r.roomIdx].id,
+        category: r.category,
+        title: r.title,
+        description: r.description,
+        status: r.status,
+        priority: r.priority,
+        assignedToId: r.assignedToId || null,
+        resolvedAt: r.status === "RESOLVED" ? new Date() : null,
+      },
+    });
+  }
 
   await prisma.notification.create({
     data: {
@@ -98,21 +167,43 @@ async function main() {
     },
   });
 
+  await prisma.notification.create({
+    data: {
+      userId: tenants[2].id, channel: "IN_APP",
+      subject: "Rent payment pending",
+      body: "Your recent rent payment is awaiting confirmation by management.",
+      status: "SENT", sentAt: new Date(),
+    },
+  });
+
+  const equipmentData = [
+    { name: "Split Air Conditioner", type: "HVAC", location: "Room 101", serialNumber: "AC-101-2024", purchaseDate: new Date(2024, 2, 15), lifespanMonths: 96, status: "ACTIVE" as const },
+    { name: "Water Heater", type: "Plumbing", location: "Room 102", serialNumber: "WH-102-2023", purchaseDate: new Date(2023, 5, 10), lifespanMonths: 72, status: "ACTIVE" as const, lastServicedAt: new Date(2026, 5, 10) },
+    { name: "Standby Generator", type: "Power", location: "Basement", serialNumber: "GEN-001-2022", purchaseDate: new Date(2022, 0, 20), lifespanMonths: 120, status: "UNDER_MAINTENANCE" as const, warrantyExpiry: new Date(2027, 0, 20), lastServicedAt: new Date(2026, 6, 1) },
+    { name: "Refrigerator", type: "Appliance", location: "Room 201", serialNumber: "FR-201-2021", purchaseDate: new Date(2021, 8, 5), lifespanMonths: 84, status: "RETIRED" as const },
+    { name: "CCTV Camera", type: "Security", location: "Main gate", serialNumber: "CCTV-GATE-2024", purchaseDate: new Date(2024, 3, 12), lifespanMonths: 60, status: "ACTIVE" as const, warrantyExpiry: new Date(2026, 3, 12) },
+  ];
+  for (const e of equipmentData) {
+    await prisma.equipment.upsert({
+      where: { serialNumber: e.serialNumber },
+      update: {},
+      create: e,
+    });
+  }
+
   await prisma.auditLog.create({
     data: { userId: admin.id, action: "seed.run", entityType: "System", payload: "initial seed" },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      userId: staff1.id, action: "request.create",
-      entityType: "MaintenanceRequest", entityId: openReq.id,
-    },
-  });
-
   console.log("Seed complete:");
-  console.log("  Admin   : admin@pk.local  / admin123");
-  console.log("  Staff   : staff1@pk.local / staff123");
-  console.log("  Tenant  : tenant1@pk.local / tenant123");
+  console.log("  Admin   : admin@example.com  / admin123");
+  console.log("  Staff   : staff1@example.com / staff123");
+  console.log("  Tenant  : tenant1@example.com / tenant123");
+  console.log("  Rooms   :", rooms.length);
+  console.log("  Payments:", paymentData.length);
+  console.log("  Bills   :", billData.length);
+  console.log("  Requests:", requestData.length);
+  console.log("  Equipment:", equipmentData.length);
 }
 
 main().finally(() => prisma.$disconnect());
