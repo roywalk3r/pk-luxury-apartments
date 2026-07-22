@@ -10,20 +10,15 @@ import { FormToast } from "@/components/forms/form-toast";
 type Room = { id: string; number: string; monthlyRent: number };
 type Tenant = { id: string; name: string; phone: string | null; active: boolean };
 
-export function TenantForm({
-  mode,
-  rooms,
-  tenant,
-}: {
-  mode: "create";
-  rooms: Room[];
-  tenant?: undefined;
-} | {
-  mode: "edit";
-  tenant: Tenant;
-  rooms?: undefined;
-}) {
-  const action = mode === "edit" ? updateTenantAction.bind(null, tenant.id) : createTenantAction;
+type Props = (
+  | { mode: "create"; rooms: Room[]; tenant?: undefined; submitLabel?: string }
+  | { mode: "edit"; tenant: Tenant; rooms?: undefined; submitLabel?: string }
+);
+
+export function TenantForm(props: Props) {
+  const action = props.mode === "edit" ? updateTenantAction.bind(null, props.tenant.id) : createTenantAction;
+  const tenant = props.mode === "edit" ? props.tenant : undefined;
+  const rooms = props.mode === "create" ? props.rooms : [];
   const [state, formAction, pending] = useActionState(action, undefined);
   return (
     <form action={formAction} className="space-y-4 max-w-md">
@@ -33,7 +28,7 @@ export function TenantForm({
         <Input id="name" name="name" required defaultValue={tenant?.name} />
         {state?.errors?.name?.[0] && <p className="text-sm text-red-600">{state.errors.name[0]}</p>}
       </div>
-      {mode === "create" && (
+      {props.mode === "create" && (
         <>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -50,7 +45,7 @@ export function TenantForm({
         <Label htmlFor="phone">Phone</Label>
         <Input id="phone" name="phone" defaultValue={tenant?.phone ?? ""} />
       </div>
-      {mode === "create" && (
+      {props.mode === "create" && (
         <>
           <div className="space-y-2">
             <Label htmlFor="roomId">Room</Label>
@@ -71,13 +66,13 @@ export function TenantForm({
           </div>
         </>
       )}
-      {mode === "edit" && (
+      {props.mode === "edit" && (
         <div className="flex items-center gap-2">
-          <input id="active" name="active" type="checkbox" defaultChecked={tenant.active} />
+          <input id="active" name="active" type="checkbox" defaultChecked={tenant?.active} />
           <Label htmlFor="active">Active account</Label>
         </div>
       )}
-      <Button type="submit" disabled={pending}>{mode === "create" ? "Create tenant" : "Update tenant"}</Button>
+      <Button type="submit" disabled={pending}>{props.submitLabel ?? (props.mode === "create" ? "Create tenant" : "Update tenant")}</Button>
     </form>
   );
 }

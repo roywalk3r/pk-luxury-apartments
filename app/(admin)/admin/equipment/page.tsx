@@ -32,7 +32,7 @@ export default async function EquipmentListPage() {
                 <TableCell colSpan={7} className="text-center text-muted-foreground">No equipment recorded yet.</TableCell>
               </TableRow>
             )}
-            {items.map((item) => (
+            {items.map((item: { id: string; name: string; type: string | null; location: string | null; purchaseDate: Date; lifespanMonths: number; status: string }) => (
               <TableRow key={item.id}>
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.type ?? "—"}</TableCell>

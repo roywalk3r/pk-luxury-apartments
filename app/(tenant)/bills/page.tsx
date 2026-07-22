@@ -4,14 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Droplets } from "lucide-react";
 import { BillPayForm } from "@/components/forms/bill-pay-form";
-import { isPaystackConfigured } from "@/lib/services/paystack";
 
 function formatCedis(amount: number) {
   return `GHS ${(amount / 100).toFixed(2)}`;
 }
 
 export default async function TenantBillsPage() {
-  const [bills, paystackReady] = await Promise.all([getTenantBills(), isPaystackConfigured()]);
+  const bills = await getTenantBills();
 
   return (
     <div className="space-y-6">
@@ -52,8 +51,7 @@ export default async function TenantBillsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    {b.status !== "PAID" && paystackReady && (<BillPayForm billId={b.id} />
-                    )}
+                    {b.status !== "PAID" && <BillPayForm billId={b.id} />}
                   </TableCell>
                 </TableRow>
               ))}

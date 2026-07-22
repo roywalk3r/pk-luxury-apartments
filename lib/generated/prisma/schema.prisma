@@ -58,6 +58,13 @@ enum Priority {
   URGENT
 }
 
+enum EquipmentStatus {
+  ACTIVE
+  UNDER_MAINTENANCE
+  RETIRED
+  REPLACED
+}
+
 enum NotificationChannel {
   SMS
   EMAIL
@@ -216,6 +223,24 @@ model Notification {
 
   @@index([userId])
   @@index([readAt])
+}
+
+model Equipment {
+  id             String          @id @default(cuid())
+  name           String
+  type           String?
+  location       String?
+  serialNumber   String?         @unique
+  purchaseDate   DateTime
+  lifespanMonths Int
+  warrantyExpiry DateTime?
+  lastServicedAt DateTime?
+  status         EquipmentStatus @default(ACTIVE)
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([status])
 }
 
 model BookingRequest {

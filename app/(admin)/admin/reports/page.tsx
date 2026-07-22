@@ -57,7 +57,7 @@ export default async function ReportsPage({ searchParams }: PageProps) {
       orderBy: { dueDate: "desc" },
     }),
     prisma.maintenanceRequest.findMany({
-      where: requestStatus ? { status: requestStatus as any } : {},
+      where: requestStatus ? { status: requestStatus as never } : {},
       include: { tenant: true, room: true },
       orderBy: { createdAt: "desc" },
     }),

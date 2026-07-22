@@ -8,15 +8,9 @@ export default async function ProfilePage() {
   const user = await prisma.user.findUnique({ where: { id: session!.user.id } });
   if (!user) notFound();
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Profile</h1>
-      <ProfileForm
-        defaults={{
-          name: user.name,
-          phone: user.phone ?? "",
-          profileImageUrl: user.profileImageUrl ?? "",
-        }}
-      />
+    <div className="space-y-6">
+      <h1 className="text-3xl font-semibold tracking-tight">My Profile</h1>
+      <ProfileForm user={user} />
     </div>
   );
 }

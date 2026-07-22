@@ -48,7 +48,7 @@ export async function exportReportsCsv(_: unknown, formData: FormData): Promise<
       orderBy: { dueDate: "desc" },
     }),
     prisma.maintenanceRequest.findMany({
-      where: requestStatus ? { status: requestStatus as any } : {},
+      where: requestStatus ? { status: requestStatus as 'OPEN' | 'ASSIGNED' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED' } : {},
       include: { tenant: true, room: true },
       orderBy: { createdAt: "desc" },
     }),

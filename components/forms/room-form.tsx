@@ -6,11 +6,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createRoomAction, updateRoomAction } from "@/lib/actions/rooms";
 import { FormToast } from "@/components/forms/form-toast";
+import { use } from "react";
 
 type Room = { id: string; number: string; type: string; size: string; monthlyRent: number; description?: string | null; status?: "AVAILABLE" | "OCCUPIED" | "MAINTENANCE" };
 
-export function RoomForm({ room }: { room?: Room }) {
-  const action = room ? updateRoomAction.bind(null, room.id) : createRoomAction;
+type Props = { room?: Room; submitLabel?: string };
+
+export function RoomForm(props: Props) {
+  const action = props.room ? updateRoomAction.bind(null, props.room.id) : createRoomAction;
+  const room = props.room;
   const [state, formAction, pending] = useActionState(action, undefined);
   return (
     <form action={formAction} className="space-y-4 max-w-md">
@@ -50,7 +54,7 @@ export function RoomForm({ room }: { room?: Room }) {
           </Select>
         </div>
       )}
-      <Button type="submit" disabled={pending}>{room ? "Update room" : "Create room"}</Button>
+      <Button type="submit" disabled={pending}>{props.submitLabel ?? (room ? "Update room" : "Create room")}</Button>
     </form>
   );
 }
