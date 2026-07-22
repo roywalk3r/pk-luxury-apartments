@@ -1,9 +1,10 @@
-// Paystack API wrapper using the paystack-api package.
-// The package expects a function-constructor pattern that conflicts with
-// webpack module federation in Next.js. We construct a thin shim that
-// matches the minimal surface used by the app (transaction.initialize, .verify).
-
-import Paystack from "paystack-api";
+// Paystack API wrapper.
+//
+// The paystack-api package only ships a CommonJS entry point and uses a
+// `this instanceof` constructor pattern that webpack can mangle. The
+// shim below lazy-loads the package from a function call so webpack
+// only treats it as a dynamic import; the public surface used by the
+// rest of the app is just `initializePayment` and `verifyPayment`.
 
 const secretKey = process.env.PAYSTACK_SECRET_KEY;
 const publicKey = process.env.PAYSTACK_PUBLIC_KEY;
@@ -14,53 +15,66 @@ export function getPaystackPublicKey() {
   return publicKey || "";
 }
 
-type PaystackShim = {
-  transaction: {
-    initialize: (params: {
-      email: string;
-      amount: number;
-      reference: string;
-      callback_url?: string;
-      metadata?: Record<string, string>;
-      channels?: string[];
-    }) => Promise<{
-      status: boolean;
-      message: string;
-      data: { authorization_url: string; access_code: string; reference: string };
-    }>;
-    verify: (params: { reference: string }) => Promise<{
-      status: boolean;
-      message: string;
-      data: {
-        status: "success" | "failed" | "abandoned" | "pending";
-        reference: string;
-        amount: number;
-        paid_at: string | null;
-        channel: string;
-        card_type?: string;
-        bank?: string;
-        authorization?: { mobile_money_number?: string };
-        metadata?: Record<string, string>;
-      };
-    }>;
+type InitializeArgs = {
+  email: string;
+  amount: number;
+  reference: string;
+  callback_url?: string;
+  metadata?: Record<string, string>;
+  channels?: string[];
+};
+
+type InitializeResult = {
+  status: boolean;
+  message: string;
+  data: { authorization_url: string; access_code: string; reference: string };
+};
+
+type VerifyResult = {
+  status: boolean;
+  message: string;
+  data: {
+    status: "success" | "failed" | "abandoned" | "pending";
+    reference: string;
+    amount: number;
+    paid_at: string | null;
+    channel: string;
+    card_type?: string;
+    bank?: string;
+    authorization?: { mobile_money_number?: string };
+    metadata?: Record<string, string>;
   };
 };
 
-function buildShim(key: string): PaystackShim {
-  // The vendored module exports a function that mutates `this`; calling
-  // it without `new` returns a plain object whose prototype is wired up
-  // in the `import` step. We invoke it as a constructor and also keep
-  // the result for the prototype methods.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const instance: any = new (Paystack as any)(key);
-  return instance as PaystackShim;
+interface PaystackShim {
+  transaction: {
+    initialize: (args: InitializeArgs) => Promise<InitializeResult>;
+    verify: (args: { reference: string }) => Promise<VerifyResult>;
+  };
 }
 
 let _client: PaystackShim | null = null;
-function getClient(): PaystackShim | null {
+let _clientPromise: Promise<PaystackShim | null> | null = null;
+
+async function getClient(): Promise<PaystackShim | null> {
   if (!secretKey) return null;
-  if (!_client) _client = buildShim(secretKey);
-  return _client;
+  if (_client) return _client;
+  if (_clientPromise) return _clientPromise;
+  _clientPromise = (async () => {
+    // Use a dynamic require so the CommonJS module is only evaluated
+    // at runtime and the import graph stays type-safe.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const required = await import("paystack-api");
+    // The vendored module exports a function-constructor. We construct
+    // the client and let its `import` step wire up the resource methods.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const Ctor: any = (required as any).default ?? required;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const instance: any = new Ctor(secretKey);
+    _client = instance as PaystackShim;
+    return _client;
+  })();
+  return _clientPromise;
 }
 
 export async function initializePayment({
@@ -76,7 +90,7 @@ export async function initializePayment({
   callbackUrl: string;
   metadata?: Record<string, string>;
 }) {
-  const client = getClient();
+  const client = await getClient();
   if (!client) {
     throw new Error("Paystack is not configured. Add PAYSTACK_SECRET_KEY to .env");
   }
@@ -91,7 +105,7 @@ export async function initializePayment({
 }
 
 export async function verifyPayment(reference: string) {
-  const client = getClient();
+  const client = await getClient();
   if (!client) {
     throw new Error("Paystack is not configured. Add PAYSTACK_SECRET_KEY to .env");
   }
