@@ -1,36 +1,35 @@
-// Paystack API wrapper.
+// Paystack REST client.
 //
-// The paystack-api package only ships a CommonJS entry point and uses a
-// `this instanceof` constructor pattern that webpack can mangle. The
-// shim below lazy-loads the package from a function call so webpack
-// only treats it as a dynamic import; the public surface used by the
-// rest of the app is just `initializePayment` and `verifyPayment`.
+// Paystack has a documented HTTPS API at https://api.paystack.co so the
+// app talks to it directly with fetch instead of a third-party SDK.
+// This keeps the dependency surface small and avoids the
+// CommonJS/import-graph headaches the paystack-api package creates.
 
-const secretKey = process.env.PAYSTACK_SECRET_KEY;
-const publicKey = process.env.PAYSTACK_PUBLIC_KEY;
+const PAYSTACK_BASE = "https://api.paystack.co";
 
-export const isPaystackConfigured = () => Boolean(secretKey && secretKey.startsWith("sk_"));
+export const isPaystackConfigured = () =>
+  Boolean(process.env.PAYSTACK_SECRET_KEY && process.env.PAYSTACK_SECRET_KEY.startsWith("sk_"));
 
 export function getPaystackPublicKey() {
-  return publicKey || "";
+  return process.env.PAYSTACK_PUBLIC_KEY || "";
 }
 
 type InitializeArgs = {
   email: string;
-  amount: number;
+  amount: number; // in pesewas
   reference: string;
   callback_url?: string;
   metadata?: Record<string, string>;
   channels?: string[];
 };
 
-type InitializeResult = {
+export type PaystackInitializeResponse = {
   status: boolean;
   message: string;
   data: { authorization_url: string; access_code: string; reference: string };
 };
 
-type VerifyResult = {
+export type PaystackVerifyResponse = {
   status: boolean;
   message: string;
   data: {
@@ -46,68 +45,39 @@ type VerifyResult = {
   };
 };
 
-interface PaystackShim {
-  transaction: {
-    initialize: (args: InitializeArgs) => Promise<InitializeResult>;
-    verify: (args: { reference: string }) => Promise<VerifyResult>;
-  };
+function authHeaders() {
+  return {
+    Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+    "Content-Type": "application/json",
+  } as const;
 }
 
-let _client: PaystackShim | null = null;
-let _clientPromise: Promise<PaystackShim | null> | null = null;
-
-async function getClient(): Promise<PaystackShim | null> {
-  if (!secretKey) return null;
-  if (_client) return _client;
-  if (_clientPromise) return _clientPromise;
-  _clientPromise = (async () => {
-    // Use a dynamic require so the CommonJS module is only evaluated
-    // at runtime and the import graph stays type-safe.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const required = await import("paystack-api");
-    // The vendored module exports a function-constructor. We construct
-    // the client and let its `import` step wire up the resource methods.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const Ctor: any = (required as any).default ?? required;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const instance: any = new Ctor(secretKey);
-    _client = instance as PaystackShim;
-    return _client;
-  })();
-  return _clientPromise;
-}
-
-export async function initializePayment({
-  email,
-  amount,
-  reference,
-  callbackUrl,
-  metadata,
-}: {
-  email: string;
-  amount: number;
-  reference: string;
-  callbackUrl: string;
-  metadata?: Record<string, string>;
-}) {
-  const client = await getClient();
-  if (!client) {
+export async function initializePayment(args: InitializeArgs): Promise<PaystackInitializeResponse> {
+  if (!isPaystackConfigured()) {
     throw new Error("Paystack is not configured. Add PAYSTACK_SECRET_KEY to .env");
   }
-  return client.transaction.initialize({
-    email,
-    amount,
-    reference,
-    callback_url: callbackUrl,
-    metadata,
-    channels: ["card", "mobile_money"],
+  const res = await fetch(`${PAYSTACK_BASE}/transaction/initialize`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(args),
+    cache: "no-store",
   });
+  if (!res.ok) {
+    throw new Error(`Paystack initialize failed: ${res.status} ${res.statusText}`);
+  }
+  return res.json() as Promise<PaystackInitializeResponse>;
 }
 
-export async function verifyPayment(reference: string) {
-  const client = await getClient();
-  if (!client) {
+export async function verifyPayment(reference: string): Promise<PaystackVerifyResponse> {
+  if (!isPaystackConfigured()) {
     throw new Error("Paystack is not configured. Add PAYSTACK_SECRET_KEY to .env");
   }
-  return client.transaction.verify({ reference });
+  const res = await fetch(
+    `${PAYSTACK_BASE}/transaction/verify/${encodeURIComponent(reference)}`,
+    { method: "GET", headers: authHeaders(), cache: "no-store" },
+  );
+  if (!res.ok) {
+    throw new Error(`Paystack verify failed: ${res.status} ${res.statusText}`);
+  }
+  return res.json() as Promise<PaystackVerifyResponse>;
 }

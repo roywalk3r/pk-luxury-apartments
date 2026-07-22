@@ -159,7 +159,7 @@ export async function initiateTenantPayment(_: ActionState, formData: FormData):
       email: tenancy.tenant.email,
       amount: amountPesewas,
       reference,
-      callbackUrl,
+      callback_url: callbackUrl,
       metadata: {
         tenancyId: tenancy.id,
         tenantId: session.user.id,
@@ -237,7 +237,7 @@ export async function initiateBillPayment(_: ActionState, formData: FormData): P
       email: bill.tenancy.tenant.email,
       amount: bill.amount,
       reference,
-      callbackUrl,
+      callback_url: callbackUrl,
       metadata: {
         billId: bill.id,
         tenancyId: bill.tenancy.id,
