@@ -31,6 +31,7 @@ declare module "@auth/core/jwt" {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
+  trustHost: true,
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -59,6 +60,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.role = token.role;
       session.user.image = token.image;
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Allows relative URLs and URLs on the same origin; blocks open redirects
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (url.startsWith(baseUrl)) return url;
+      return baseUrl;
     },
   },
 });

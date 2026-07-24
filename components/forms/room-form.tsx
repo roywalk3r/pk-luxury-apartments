@@ -6,18 +6,26 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createRoomAction, updateRoomAction } from "@/lib/actions/rooms";
 import { FormToast } from "@/components/forms/form-toast";
-import { use } from "react";
 
-type Room = { id: string; number: string; type: string; size: string; monthlyRent: number; description?: string | null; status?: "AVAILABLE" | "OCCUPIED" | "MAINTENANCE" };
+ type Room = {
+  id: string;
+  number: string;
+  type: string;
+  size: string;
+  monthlyRent: number;
+  description?: string | null;
+  imageUrl?: string | null;
+  status?: "AVAILABLE" | "OCCUPIED" | "MAINTENANCE";
+};
 
-type Props = { room?: Room; submitLabel?: string };
+ type Props = { room?: Room; submitLabel?: string };
 
 export function RoomForm(props: Props) {
   const action = props.room ? updateRoomAction.bind(null, props.room.id) : createRoomAction;
   const room = props.room;
   const [state, formAction, pending] = useActionState(action, undefined);
   return (
-    <form action={formAction} className="space-y-4 max-w-md">
+    <form action={formAction} className="max-w-md space-y-4">
       <FormToast state={state} />
       <div className="space-y-2">
         <Label htmlFor="number">Room number</Label>
@@ -36,6 +44,18 @@ export function RoomForm(props: Props) {
         <Label htmlFor="monthlyRent">Monthly rent (pesewas)</Label>
         <Input id="monthlyRent" name="monthlyRent" type="number" required defaultValue={room?.monthlyRent} />
         <p className="text-xs text-muted-foreground">GHS value × 100 (e.g. 150000 = GHS 1,500.00)</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="imageUrl">Image URL</Label>
+        <Input
+          id="imageUrl"
+          name="imageUrl"
+          type="url"
+          placeholder="https://example.com/room-photo.jpg"
+          defaultValue={room?.imageUrl ?? ""}
+        />
+        {state?.errors?.imageUrl?.[0] && <p className="text-sm text-red-600">{state.errors.imageUrl[0]}</p>}
+        <p className="text-xs text-muted-foreground">Public URL for the room photo shown on the landing page and room list.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>

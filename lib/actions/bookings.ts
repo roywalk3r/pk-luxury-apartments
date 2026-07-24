@@ -17,11 +17,8 @@ async function requireAdmin() {
   return session;
 }
 
-function formatCedis(amount: number) {
-  return `GHS ${(amount / 100).toFixed(2)}`;
-}
 
-export async function createBookingAction(_: ActionState, formData: FormData): Promise<ActionState> {
+export async function createBookingAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   const parsed = CreateBookingSchema.safeParse({
     roomId: formData.get("roomId"),
     name: formData.get("name"),
@@ -49,7 +46,7 @@ export async function createBookingAction(_: ActionState, formData: FormData): P
     },
   });
 
-  await prisma.bookingRequest.create({
+  const booking = await prisma.bookingRequest.create({
     data: {
       roomId: parsed.data.roomId,
       prospectId: prospect.id,
@@ -69,7 +66,7 @@ export async function createBookingAction(_: ActionState, formData: FormData): P
 
   revalidatePath("/rooms");
   await flashMessage("Booking request submitted", "success");
-  redirect(`/rooms?booked=${encodeURIComponent(parsed.data.roomId)}`);
+  redirect(`/book/success?booking=${encodeURIComponent(booking.id)}`);
 }
 
 export async function getPendingBookings() {
@@ -81,6 +78,7 @@ export async function getPendingBookings() {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function confirmBookingAction(id: string, _: ActionState, _formData: FormData): Promise<ActionState> {
   const session = await requireAdmin();
   const booking = await prisma.bookingRequest.findUnique({
@@ -131,6 +129,7 @@ export async function confirmBookingAction(id: string, _: ActionState, _formData
   redirect("/admin/bookings");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function rejectBookingAction(id: string, _: ActionState, _formData: FormData): Promise<ActionState> {
   const session = await requireAdmin();
   const booking = await prisma.bookingRequest.findUnique({ where: { id } });

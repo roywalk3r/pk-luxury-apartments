@@ -10,6 +10,7 @@ export const CreateRoomSchema = z.object({
   type: z.string().min(1, "Type is required"),
   size: z.string().min(1, "Size is required"),
   monthlyRent: z.coerce.number().int().positive("Rent must be positive (in pesewas)"),
+  imageUrl: z.string().url("Enter a valid image URL").optional().default(""),
   description: z.string().optional().default(""),
 });
 
@@ -24,6 +25,7 @@ export const CreateTenantSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   roomId: z.string().min(1, "Room is required"),
   monthlyRent: z.coerce.number().int().positive("Rent must be positive (in pesewas)"),
+  imageUrl: z.string().url("Enter a valid image URL").optional().default(""),
 });
 
 export const UpdateTenantSchema = z.object({

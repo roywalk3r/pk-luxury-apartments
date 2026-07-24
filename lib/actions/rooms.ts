@@ -22,6 +22,7 @@ export async function createRoomAction(_: ActionState, formData: FormData): Prom
     size: formData.get("size"),
     monthlyRent: formData.get("monthlyRent"),
     description: formData.get("description") ?? "",
+    imageUrl: formData.get("imageUrl") ?? "",
   });
   if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
   const room = await prisma.room.create({ data: parsed.data });
@@ -41,6 +42,7 @@ export async function updateRoomAction(id: string, _: ActionState, formData: For
     size: formData.get("size"),
     monthlyRent: formData.get("monthlyRent"),
     description: formData.get("description") ?? "",
+    imageUrl: formData.get("imageUrl") ?? "",
     status: formData.get("status"),
   });
   if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
